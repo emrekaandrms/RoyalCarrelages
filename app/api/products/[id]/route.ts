@@ -5,13 +5,10 @@ export const preferredRegion = 'cdg1';
 
 export const dynamic = 'force-dynamic';
 
-interface Params {
-  params: {
-    id: string;
-  };
-}
-
-export async function GET(_: Request, { params }: Params) {
+export async function GET(
+  _: Request, 
+  { params }: { params: { id: string } }
+) {
   try {
     const product = await prisma.product.findUnique({ where: { id: params.id } });
     if (!product) {
@@ -24,7 +21,10 @@ export async function GET(_: Request, { params }: Params) {
   }
 }
 
-export async function PUT(request: Request, { params }: Params) {
+export async function PUT(
+  request: Request, 
+  { params }: { params: { id: string } }
+) {
   try {
     const data = await request.json();
     const product = await prisma.product.update({ where: { id: params.id }, data });
@@ -35,7 +35,10 @@ export async function PUT(request: Request, { params }: Params) {
   }
 }
 
-export async function DELETE(_: Request, { params }: Params) {
+export async function DELETE(
+  _: Request, 
+  { params }: { params: { id: string } }
+) {
   try {
     await prisma.product.delete({ where: { id: params.id } });
     return NextResponse.json({ ok: true });

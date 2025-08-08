@@ -1,30 +1,53 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## Production on Hostinger (Node app)
+## Production on Hostinger VPS (PostgreSQL)
 
-1. Build standalone
+### 1. VPS Kurulumu
 ```bash
+# PostgreSQL kurulumu (Ubuntu/Debian)
+sudo apt update
+sudo apt install postgresql postgresql-contrib nodejs npm
+
+# Database oluşturma
+sudo -u postgres createdb royal_carrelages
+sudo -u postgres createuser --interactive your_username
+```
+
+### 2. Environment Variables
+```bash
+# .env dosyası oluşturun
+DATABASE_URL="postgresql://username:password@localhost:5432/royal_carrelages"
+```
+
+### 3. Deploy
+```bash
+# Dosyaları VPS'e yükleyin
 npm ci
-npm run build
+npm run deploy  # migrations + seed + build
+npm run start:prod
 ```
 
-2. Start (production)
+### 4. PM2 ile Process Management
 ```bash
-PORT=3000 npm run start:prod
+npm install -g pm2
+pm2 start npm --name "royal-carrelages" -- run start:prod
+pm2 startup
+pm2 save
 ```
 
-3. Environment
-- `DATABASE_URL` required
-- `ADMIN_USER`, `ADMIN_PASS` for Basic Auth (admin and write APIs)
-
-4. Prisma (deploy migrations, optional seed)
-```bash
-npm run migrate:deploy
-npm run db:seed # optional
-```
-
-5. Healthcheck
+### 5. Healthcheck
 `GET /api/health` → `{ ok: true }`
+
+### Alternative: Cloud Database
+- **Supabase**: Ücretsiz PostgreSQL (EU region)
+- **Neon**: Serverless PostgreSQL
+- **Railway**: Kolay setup
+
+```bash
+# Cloud database ile
+DATABASE_URL="postgresql://postgres:password@db.xxx.supabase.co:5432/postgres"
+npm run deploy
+```
 
 ## Getting Started
 

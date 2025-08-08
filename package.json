@@ -5,11 +5,14 @@
   "scripts": {
     "dev": "cross-env NODE_ENV=development next dev -H 0.0.0.0 -p 3000",
     "build": "next build",
+    "start": "next start",
     "start:prod": "next start -H 0.0.0.0 -p $PORT",
     "migrate:deploy": "prisma migrate deploy",
     "lint": "next lint",
     "generate:products": "node scripts/generateProducts.js",
-    "db:seed": "prisma db seed"
+    "db:seed": "prisma db seed",
+    "deploy": "prisma migrate deploy && npm run db:seed && npm run build",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
