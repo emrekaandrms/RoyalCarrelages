@@ -16,3 +16,16 @@ model Product {
   imagePath   String
   slug        String   @unique
 } 
+
+
+cat > .env << 'ENV'
+NODE_ENV=production
+PORT=3000
+
+# Yerel PostgreSQL örneği
+DATABASE_URL="postgresql://royal_user:KVcAa5Z10oq1GP.@localhost:5432/royal_carrelages?schema=public"
+
+# Admin Basic Auth (middleware bunu build zamanında gömer)
+ADMIN_USER="admin"
+ADMIN_PASS="admin123"
+ENV

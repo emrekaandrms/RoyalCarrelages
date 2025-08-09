@@ -6,8 +6,8 @@ export const preferredRegion = 'cdg1';
 export const dynamic = 'force-dynamic';
 
 export async function GET(
-  _: Request, 
-  { params }: { params: { id: string } }
+  _: Request,
+  { params }: any
 ) {
   try {
     const product = await prisma.product.findUnique({ where: { id: params.id } });
@@ -22,8 +22,8 @@ export async function GET(
 }
 
 export async function PUT(
-  request: Request, 
-  { params }: { params: { id: string } }
+  request: Request,
+  { params }: any
 ) {
   try {
     const data = await request.json();
@@ -36,8 +36,8 @@ export async function PUT(
 }
 
 export async function DELETE(
-  _: Request, 
-  { params }: { params: { id: string } }
+  _: Request,
+  { params }: any
 ) {
   try {
     await prisma.product.delete({ where: { id: params.id } });

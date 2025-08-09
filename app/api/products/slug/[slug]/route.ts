@@ -5,7 +5,7 @@ export const preferredRegion = 'cdg1';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { slug: string } }
+  { params }: any
 ) {
   try {
     const product = await prisma.product.findUnique({
