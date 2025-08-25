@@ -2,9 +2,46 @@
 'use client';
 
 import { useLanguage } from '@/lib/language-context';
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
 export default function TileGrid() {
   const { t } = useLanguage();
+  const [featured, setFeatured] = useState<Array<{ slug: string; image: string; name: string }>>([]);
+  const [fallback, setFallback] = useState<Array<{ slug: string; image: string; name: string }>>([]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/featured', { cache: 'no-store' });
+        if (res.ok) {
+          const items = await res.json();
+          setFeatured(
+            items.map((it: any) => ({
+              slug: it.product.slug,
+              image: `/${it.product.imagePath}`,
+              name: `${it.product.koleksiyonu} ${it.product.renk} ${it.product.olcusu}`,
+            }))
+          );
+        }
+        if ((!res.ok) || (featured.length === 0)) {
+          const p = await fetch('/api/products?limit=6', { cache: 'no-store' });
+          if (p.ok) {
+            const j = await p.json();
+            setFallback(
+              (j.products || []).map((it: any) => ({
+                slug: it.slug,
+                image: `/${it.imagePath}`,
+                name: `${it.koleksiyonu} ${it.renk} ${it.olcusu}`,
+              }))
+            );
+          }
+        }
+      } catch {
+        // ignore errors
+      }
+    })();
+  }, []);
 
   const tiles = [
     {
@@ -58,31 +95,28 @@ export default function TileGrid() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {tiles.map((tile) => (
-            <div key={tile.id} className="group cursor-pointer">
+          {(featured.length > 0 ? featured : fallback).map((item, idx) => (
+            <Link key={idx} href={`/tiles/${item.slug}`} className="group cursor-pointer">
               <div className="aspect-square overflow-hidden bg-white shadow-sm hover:shadow-lg transition-shadow duration-300">
                 <img
-                  src={tile.image}
-                  alt={tile.name}
+                  src={item.image}
+                  alt={item.name}
                   className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                 />
               </div>
               <div className="mt-6 text-center">
                 <h3 className="text-xl font-medium text-gray-800 mb-2">
-                  {tile.name}
+                  {item.name}
                 </h3>
-                <p className="text-gray-600">
-                  {tile.description}
-                </p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 
         <div className="text-center mt-16">
-          <button className="bg-gray-800 text-white px-10 py-4 hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap font-medium">
+          <Link href="/tiles" className="bg-gray-800 text-white px-10 py-4 hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap font-medium inline-block">
             {t.tileGrid.viewAllBtn}
-          </button>
+          </Link>
         </div>
       </div>
     </section>

@@ -4,8 +4,9 @@
 import { useState } from 'react';
 import AdminHeader from './AdminHeader';
 import ProductManagement from './ProductManagement';
-import CollectionManagement from './CollectionManagement';
 import BannerManagement from './BannerManagement';
+import FeaturesManagement from './FeaturesManagement';
+import SettingsManagement from './SettingsManagement';
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('products');
@@ -70,8 +71,8 @@ export default function AdminPage() {
 
   const tabs = [
     { id: 'products', name: 'Produits', icon: 'ri-shopping-bag-line' },
-    { id: 'collections', name: 'Collections', icon: 'ri-folder-line' },
-    { id: 'banners', name: 'Bannières', icon: 'ri-image-line' }
+    { id: 'banners', name: 'Bannières', icon: 'ri-image-line' },
+    { id: 'features', name: 'Features', icon: 'ri-flashlight-line' }
   ];
 
   return (
@@ -103,8 +104,8 @@ export default function AdminPage() {
 
           <div className="bg-white rounded-lg shadow-sm">
             {activeTab === 'products' && <ProductManagement />}
-            {activeTab === 'collections' && <CollectionManagement />}
             {activeTab === 'banners' && <BannerManagement />}
+            {activeTab === 'features' && <FeaturesManagement />}
           </div>
         </div>
       </div>

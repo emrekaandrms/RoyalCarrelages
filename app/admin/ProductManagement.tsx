@@ -24,6 +24,9 @@ interface FormData {
 export default function ProductManagement() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(24);
+  const [totalPages, setTotalPages] = useState(1);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [formData, setFormData] = useState<FormData>({
@@ -39,9 +42,10 @@ export default function ProductManagement() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/products');
+      const response = await fetch(`/api/products?page=${page}&limit=${limit}`);
       const data = await response.json();
       setProducts(data.products || []);
+      setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error('Ürünler yüklenirken hata:', error);
     } finally {
@@ -51,7 +55,7 @@ export default function ProductManagement() {
 
   useEffect(() => {
     fetchProducts();
-  }, []);
+  }, [page, limit]);
 
   // Slug oluşturma fonksiyonu
   const createSlug = (koleksiyon: string, olcu: string, renk: string) => {
@@ -346,6 +350,13 @@ export default function ProductManagement() {
             ))}
           </tbody>
         </table>
+        <div className="flex items-center justify-between mt-4">
+          <div className="text-sm text-gray-500">Sayfa {page} / {totalPages}</div>
+          <div className="space-x-2">
+            <button disabled={page<=1} onClick={() => setPage((p)=>Math.max(1,p-1))} className="px-3 py-1 border rounded disabled:opacity-50">Önceki</button>
+            <button disabled={page>=totalPages} onClick={() => setPage((p)=>Math.min(totalPages,p+1))} className="px-3 py-1 border rounded disabled:opacity-50">Sonraki</button>
+          </div>
+        </div>
         
         {products.length === 0 && (
           <div className="text-center py-8 text-gray-500">

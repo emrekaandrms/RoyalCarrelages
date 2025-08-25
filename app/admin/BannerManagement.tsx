@@ -1,86 +1,85 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+
+type Banner = {
+  id: string;
+  title: string;
+  subtitle?: string;
+  imageUrl: string;
+  link?: string;
+  buttonText?: string;
+  status: 'ACTIVE' | 'INACTIVE';
+  position: 'HERO' | 'SECONDARY' | 'FOOTER';
+  order: number;
+};
 
 export default function BannerManagement() {
-  const [banners, setBanners] = useState([
-    {
-      id: 1,
-      title: 'Nouvelle Collection Printemps',
-      subtitle: 'Découvrez nos derniers carreaux',
-      image: 'https://readdy.ai/api/search-image?query=Modern%20ceramic%20tiles%20display%20in%20showroom%2C%20spring%20collection%2C%20natural%20lighting%2C%20elegant%20presentation&width=800&height=400&seq=banner-spring&orientation=landscape',
-      link: '/tiles',
-      status: 'active',
-      position: 'hero'
-    },
-    {
-      id: 2,
-      title: 'Promotion Robinets -20%',
-      subtitle: 'Offre limitée',
-      image: 'https://readdy.ai/api/search-image?query=Premium%20bathroom%20faucets%20promotion%20display%2C%20modern%20fixtures%2C%20promotional%20banner%20design&width=800&height=400&seq=banner-promo&orientation=landscape',
-      link: '/faucets',
-      status: 'active',
-      position: 'secondary'
-    }
-  ]);
-
+  const [banners, setBanners] = useState<Banner[]>([]);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingBanner, setEditingBanner] = useState<any>(null);
+  const [editingBanner, setEditingBanner] = useState<Banner | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     subtitle: '',
-    image: '',
+    imageUrl: '',
     link: '',
-    position: 'hero',
-    buttonText: 'Découvrir'
+    position: 'HERO',
+    buttonText: 'Découvrir',
+    order: 0,
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (editingBanner) {
-      setBanners(banners.map(b => b.id === editingBanner.id 
-        ? { ...b, ...formData, id: editingBanner.id, status: 'active' }
-        : b
-      ));
-      setEditingBanner(null);
-    } else {
-      const newBanner = {
-        id: Date.now(),
-        ...formData,
-        status: 'active'
-      };
-      setBanners([...banners, newBanner]);
+  const load = async () => {
+    const res = await fetch('/api/banners');
+    if (res.ok) {
+      const data = await res.json();
+      setBanners(data);
     }
-
-    setFormData({ title: '', subtitle: '', image: '', link: '', position: 'hero', buttonText: 'Découvrir' });
-    setShowAddForm(false);
   };
 
-  const handleEdit = (banner: any) => {
+  useEffect(() => {
+    load();
+  }, []);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const payload = { ...formData } as any;
+    const endpoint = '/api/banners';
+    const method = editingBanner ? 'PUT' : 'POST';
+    const body = editingBanner ? JSON.stringify({ id: editingBanner.id, ...payload }) : JSON.stringify(payload);
+    const res = await fetch(endpoint, { method, headers: { 'Content-Type': 'application/json' }, body });
+    if (res.ok) {
+      setShowAddForm(false);
+      setEditingBanner(null);
+      setFormData({ title: '', subtitle: '', imageUrl: '', link: '', position: 'HERO', buttonText: 'Découvrir', order: 0 });
+      await load();
+    } else {
+      alert('Échec de sauvegarde');
+    }
+  };
+
+  const handleEdit = (banner: Banner) => {
     setEditingBanner(banner);
     setFormData({
       title: banner.title,
-      subtitle: banner.subtitle,
-      image: banner.image,
-      link: banner.link,
+      subtitle: banner.subtitle || '',
+      imageUrl: banner.imageUrl,
+      link: banner.link || '',
       position: banner.position,
-      buttonText: banner.buttonText || 'Découvrir'
+      buttonText: banner.buttonText || 'Découvrir',
+      order: banner.order || 0,
     });
     setShowAddForm(true);
   };
 
-  const handleDelete = (id: number) => {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette bannière ?')) {
-      setBanners(banners.filter(b => b.id !== id));
-    }
+  const handleDelete = async (id: string) => {
+    if (!confirm('Supprimer cette bannière ?')) return;
+    const res = await fetch('/api/banners', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id }) });
+    if (res.ok) await load();
   };
 
-  const toggleStatus = (id: number) => {
-    setBanners(banners.map(b => b.id === id 
-      ? { ...b, status: b.status === 'active' ? 'inactive' : 'active' }
-      : b
-    ));
+  const toggleStatus = async (b: Banner) => {
+    const res = await fetch('/api/banners', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: b.id, status: b.status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE' }) });
+    if (res.ok) await load();
   };
 
   return (
@@ -91,7 +90,7 @@ export default function BannerManagement() {
           onClick={() => {
             setShowAddForm(true);
             setEditingBanner(null);
-            setFormData({ title: '', subtitle: '', image: '', link: '', position: 'hero', buttonText: 'Découvrir' });
+            setFormData({ title: '', subtitle: '', imageUrl: '', link: '', position: 'HERO', buttonText: 'Découvrir', order: 0 });
           }}
           className="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap flex items-center"
         >
@@ -115,7 +114,7 @@ export default function BannerManagement() {
                 <input
                   type="text"
                   value={formData.title}
-                  onChange={(e) => setFormData({...formData, title: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                   required
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
                 />
@@ -128,24 +127,40 @@ export default function BannerManagement() {
                 <input
                   type="text"
                   value={formData.subtitle}
-                  onChange={(e) => setFormData({...formData, subtitle: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
                 />
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                URL de l'image *
-              </label>
-              <input
-                type="url"
-                value={formData.image}
-                onChange={(e) => setFormData({...formData, image: e.target.value})}
-                required
-                className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="https://..."
-              />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Image *
+                </label>
+                <input type="file" accept="image/*" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                  if (res.ok) {
+                    const json = await res.json();
+                    setFormData((prev) => ({ ...prev, imageUrl: json.url }));
+                  } else {
+                    alert('Échec du téléversement');
+                  }
+                }} className="w-full px-4 py-2 border border-gray-300 rounded text-sm bg-white" />
+                {formData.imageUrl && (
+                  <div className="mt-2">
+                    <img src={formData.imageUrl} alt="preview" className="h-24 rounded" />
+                  </div>
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Ordre</label>
+                <input type="number" value={formData.order} onChange={(e) => setFormData({ ...formData, order: Number(e.target.value) })} className="w-full px-4 py-2 border border-gray-300 rounded text-sm" />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -156,9 +171,9 @@ export default function BannerManagement() {
                 <input
                   type="text"
                   value={formData.link}
-                  onChange={(e) => setFormData({...formData, link: e.target.value})}
-                  className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                  placeholder="/tiles, /faucets, etc."
+                  onChange={(e) => setFormData({ ...formData, link: e.target.value })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus-border-transparent text-sm"
+                  placeholder="/tiles, /contact, http..."
                 />
               </div>
 
@@ -168,12 +183,12 @@ export default function BannerManagement() {
                 </label>
                 <select
                   value={formData.position}
-                  onChange={(e) => setFormData({...formData, position: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, position: e.target.value as any })}
                   className="w-full pr-8 px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
                 >
-                  <option value="hero">Hero (principal)</option>
-                  <option value="secondary">Secondaire</option>
-                  <option value="footer">Pied de page</option>
+                  <option value="HERO">Hero (principal)</option>
+                  <option value="SECONDARY">Secondaire</option>
+                  <option value="FOOTER">Pied de page</option>
                 </select>
               </div>
 
@@ -184,7 +199,7 @@ export default function BannerManagement() {
                 <input
                   type="text"
                   value={formData.buttonText}
-                  onChange={(e) => setFormData({...formData, buttonText: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, buttonText: e.target.value })}
                   className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
                 />
               </div>
@@ -218,7 +233,7 @@ export default function BannerManagement() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-0">
               <div className="lg:col-span-1">
                 <img 
-                  src={banner.image} 
+                  src={banner.imageUrl} 
                   alt={banner.title}
                   className="w-full h-48 lg:h-full object-cover"
                 />
@@ -230,8 +245,8 @@ export default function BannerManagement() {
                     <div className="flex items-center space-x-2 mb-2">
                       <h3 className="text-xl font-medium text-gray-800">{banner.title}</h3>
                       <span className={`px-2 py-1 rounded-full text-xs ${
-                        banner.position === 'hero' ? 'bg-blue-100 text-blue-800' :
-                        banner.position === 'secondary' ? 'bg-green-100 text-green-800' :
+                        banner.position === 'HERO' ? 'bg-blue-100 text-blue-800' :
+                        banner.position === 'SECONDARY' ? 'bg-green-100 text-green-800' :
                         'bg-gray-100 text-gray-800'
                       }`}>
                         {banner.position}
@@ -247,14 +262,14 @@ export default function BannerManagement() {
 
                   <div className="flex items-center space-x-2">
                     <button
-                      onClick={() => toggleStatus(banner.id)}
+                      onClick={() => toggleStatus(banner)}
                       className={`px-3 py-1 rounded-full text-xs font-medium cursor-pointer whitespace-nowrap ${
-                        banner.status === 'active' 
+                        banner.status === 'ACTIVE' 
                           ? 'bg-green-100 text-green-800 hover:bg-green-200' 
                           : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                       }`}
                     >
-                      {banner.status === 'active' ? 'Actif' : 'Inactif'}
+                      {banner.status === 'ACTIVE' ? 'Actif' : 'Inactif'}
                     </button>
                   </div>
                 </div>

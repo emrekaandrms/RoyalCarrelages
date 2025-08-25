@@ -2,32 +2,44 @@
 'use client';
 
 import { useLanguage } from '@/lib/language-context';
+import { useEffect, useState } from 'react';
 
 export default function FeatureSection() {
   const { t } = useLanguage();
+  const [features, setFeatures] = useState<Array<{ icon?: string; title: string; description: string; imageUrl?: string }>>([]);
 
-  const features = [
-    {
-      icon: 'ri-leaf-line',
-      title: t.features.natural.title,
-      description: t.features.natural.desc
-    },
-    {
-      icon: 'ri-shield-check-line',
-      title: t.features.durable.title,
-      description: t.features.durable.desc
-    },
-    {
-      icon: 'ri-palette-line',
-      title: t.features.versatile.title,
-      description: t.features.versatile.desc
-    },
-    {
-      icon: 'ri-tools-line',
-      title: t.features.installation.title,
-      description: t.features.installation.desc
-    }
-  ];
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch('/api/features', { cache: 'no-store' });
+        if (res.ok) {
+          const data = await res.json();
+          if (Array.isArray(data) && data.length) {
+            const mapped: Array<{ icon?: string; title: string; description: string; imageUrl?: string }> = data.map((f: any) => ({ icon: f.icon || 'ri-star-line', title: f.title, description: f.description, imageUrl: f.imageUrl || undefined }));
+            // Duplike başlık+açıklamaları ayıkla ve en fazla 6 göster
+            const seen = new Set<string>();
+            const unique = mapped.filter((it) => {
+              const key = `${it.title}|${it.description}`.toLowerCase();
+              if (seen.has(key)) return false;
+              seen.add(key);
+              return true;
+            }).slice(0, 6);
+            setFeatures(unique);
+            return;
+          }
+        }
+        // DB boşsa i18n defaults (duplikesiz, 4 adet)
+        setFeatures([
+          { icon: 'ri-leaf-line', title: t.features.natural.title, description: t.features.natural.desc },
+          { icon: 'ri-shield-check-line', title: t.features.durable.title, description: t.features.durable.desc },
+          { icon: 'ri-palette-line', title: t.features.versatile.title, description: t.features.versatile.desc },
+          { icon: 'ri-tools-line', title: t.features.installation.title, description: t.features.installation.desc },
+        ]);
+      } catch {
+        // ignore
+      }
+    })();
+  }, [t.features]);
 
   return (
     <section className="py-20 bg-white">
@@ -44,9 +56,13 @@ export default function FeatureSection() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <div key={index} className="text-center group">
-              <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-800 transition-colors duration-300">
-                <i className={`${feature.icon} w-8 h-8 flex items-center justify-center text-2xl text-gray-600 group-hover:text-white transition-colors duration-300`}></i>
-              </div>
+              {feature.imageUrl ? (
+                <img src={feature.imageUrl} alt={feature.title} className="w-16 h-16 mx-auto mb-6 rounded object-cover" />
+              ) : (
+                <div className="w-16 h-16 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-gray-800 transition-colors duration-300">
+                  <i className={`${feature.icon} w-8 h-8 flex items-center justify-center text-2xl text-gray-600 group-hover:text-white transition-colors duration-300`}></i>
+                </div>
+              )}
               <h3 className="text-xl font-medium text-gray-800 mb-4">
                 {feature.title}
               </h3>

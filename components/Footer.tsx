@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
 import Image from 'next/image';
-import LogoImg from '@/Anka-Photoroom.png';
 
 export default function Footer() {
   const { t } = useLanguage();
@@ -15,8 +14,8 @@ export default function Footer() {
           <div>
             <div className="mb-4">
               <Image
-                src={LogoImg}
-                alt="Anka Carrelage Logo"
+                src="/RoyalCarrelagesLogo.png"
+                alt="Royal Carrelages Logo"
                 width={180}
                 height={144}
                 className="h-14 w-auto"
@@ -32,7 +31,7 @@ export default function Footer() {
             <h4 className="text-lg font-medium mb-4">{t.footer.products}</h4>
             <ul className="space-y-2">
               <li><Link href="/tiles" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.ceramic_tiles}</Link></li>
-              <li><Link href="/faucets" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.faucets}</Link></li>
+              
               <li><Link href="/accessories" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.accessories}</Link></li>
               <li><Link href="/collections" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.collections}</Link></li>
             </ul>

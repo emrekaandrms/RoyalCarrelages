@@ -2,7 +2,7 @@ export const translations = {
   fr: {
     nav: {
       tiles: 'Carreaux',
-      faucets: 'Robinets',
+      // faucets removed
       contact: 'Contact',
       professionals: 'Professionnels',
       collections: 'Collections'
@@ -125,7 +125,7 @@ export const translations = {
       description: 'Carreaux céramiques premium qui apportent beauté naturelle et élégance intemporelle à votre espace.',
       products: 'Produits',
       ceramic_tiles: 'Carreaux Céramiques',
-      faucets: 'Robinets',
+      // faucets removed
       accessories: 'Accessoires',
       collections: 'Collections',
       services: 'Services',
@@ -142,7 +142,7 @@ export const translations = {
   en: {
     nav: {
       tiles: 'Tiles',
-      faucets: 'Faucets',
+      // faucets removed
       contact: 'Contact',
       professionals: 'Professionals',
       collections: 'Collections'
@@ -265,7 +265,7 @@ export const translations = {
       description: 'Premium ceramic tiles that bring natural beauty and timeless elegance to your space.',
       products: 'Products',
       ceramic_tiles: 'Ceramic Tiles',
-      faucets: 'Faucets',
+      // faucets removed
       accessories: 'Accessories',
       collections: 'Collections',
       services: 'Services',

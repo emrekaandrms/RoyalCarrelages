@@ -6,7 +6,6 @@ import LanguageSwitcher from './LanguageSwitcher';
 import { useLanguage } from '@/lib/language-context';
 import { usePathname } from 'next/navigation';
 import Image from 'next/image';
-import LogoImg from '@/Anka-Photoroom.png';
 
 export default function Header() {
   const { t } = useLanguage();
@@ -45,8 +44,8 @@ export default function Header() {
         {/* Logo */}
         <Link href="/" className="block select-none">
           <Image
-            src={LogoImg}
-            alt="Anka Carrelage Logo"
+            src={scrolledOrOpaque ? "/RoyalCarrelagesLogo2.png" : "/RoyalCarrelagesLogo.png"}
+            alt="Royal Carrelages Logo"
             width={160}
             height={128}
             className="h-12 w-auto"
@@ -59,7 +58,6 @@ export default function Header() {
           {[
             { href: '/collections', label: t.nav.collections },
             { href: '/tiles', label: t.nav.tiles },
-            { href: '/faucets', label: t.nav.faucets },
             { href: '/contact', label: t.nav.contact },
             { href: '/professionals', label: t.nav.professionals }
           ].map(({ href, label }) => (
@@ -120,13 +118,6 @@ export default function Header() {
             className="text-gray-700 hover:text-blue-600 transition-colors"
           >
             {t.nav.tiles}
-          </Link>
-          <Link
-            href="/faucets"
-            onClick={() => setIsMenuOpen(false)}
-            className="text-gray-700 hover:text-blue-600 transition-colors"
-          >
-            {t.nav.faucets}
           </Link>
           <Link
             href="/contact"

@@ -25,7 +25,13 @@ export function middleware(request: NextRequest) {
 
   const needsAuth =
     pathname.startsWith('/admin') ||
-    (pathname.startsWith('/api/products') && method !== 'GET');
+    (pathname.startsWith('/api/products') && method !== 'GET') ||
+    (pathname.startsWith('/api/settings') && method !== 'GET') ||
+    (pathname.startsWith('/api/featured') && method !== 'GET') ||
+    (pathname.startsWith('/api/banners') && method !== 'GET') ||
+    (pathname.startsWith('/api/collections/meta') && method !== 'GET') ||
+    (pathname.startsWith('/api/features') && method !== 'GET') ||
+    (pathname.startsWith('/api/upload') && method !== 'GET');
 
   if (!needsAuth) {
     return NextResponse.next();
@@ -43,7 +49,7 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/api/products/:path*'],
+  matcher: ['/admin/:path*', '/api/products/:path*', '/api/settings/:path*', '/api/featured', '/api/banners', '/api/collections/meta', '/api/features', '/api/upload'],
 };
 
 

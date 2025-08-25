@@ -11,16 +11,29 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '24', 10);
+    const q = (searchParams.get('q') || '').trim();
     
     const skip = (page - 1) * limit;
     
+    const where = q
+      ? {
+          OR: [
+            { koleksiyonu: { contains: q, mode: 'insensitive' } },
+            { renk: { contains: q, mode: 'insensitive' } },
+            { olcusu: { contains: q, mode: 'insensitive' } },
+            { slug: { contains: q, mode: 'insensitive' } },
+          ],
+        }
+      : undefined;
+
     const [products, totalCount] = await Promise.all([
       prisma.product.findMany({
+        where,
         orderBy: { koleksiyonu: 'asc' },
         skip,
         take: limit,
       }),
-      prisma.product.count(),
+      prisma.product.count({ where }),
     ]);
     
     const totalPages = Math.ceil(totalCount / limit);

@@ -2,7 +2,6 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import LogoImg from '@/Anka-Photoroom.png';
 
 interface AdminHeaderProps {
   onLogout: () => void;
@@ -15,8 +14,8 @@ export default function AdminHeader({ onLogout }: AdminHeaderProps) {
         <div className="flex items-center space-x-4">
           <Link href="/" className="block select-none">
             <Image
-              src={LogoImg}
-              alt="Anka Carrelage Logo"
+              src="/RoyalCarrelagesLogo.png"
+              alt="Royal Carrelages Logo"
               width={160}
               height={128}
               className="h-12 w-auto"
