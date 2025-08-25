@@ -14,7 +14,7 @@ export default function AdminHeader({ onLogout }: AdminHeaderProps) {
         <div className="flex items-center space-x-4">
           <Link href="/" className="block select-none">
             <Image
-              src="/RoyalCarrelagesLogo.png"
+              src="/RoyalCarrelagesLogo2.png"
               alt="Royal Carrelages Logo"
               width={160}
               height={128}

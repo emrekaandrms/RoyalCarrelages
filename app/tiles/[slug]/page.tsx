@@ -3,8 +3,8 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { notFound } from 'next/navigation';
 import ProductDetail from './ProductDetail';
-import fs from 'fs';
-import path from 'path';
+import type { Metadata } from 'next';
+export const dynamic = 'force-dynamic';
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -23,12 +23,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   );
 }
 
-export async function generateStaticParams() {
-  try {
-    const data = JSON.parse(fs.readFileSync(path.join(process.cwd(), 'products.json'), 'utf-8')) as { slug: string }[];
-    return data.map((p) => ({ slug: p.slug }));
-  } catch (error) {
-    console.error('Error reading products.json:', error);
-    return [];
-  }
-} 
+// Static params disabled to avoid heavy prerender and build-time data issues.
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const product = await getProductBySlug(slug);
+  if (!product) return { title: 'Produit' };
+  return {
+    title: `${product.koleksiyonu} ${product.renk} ${product.olcusu}`,
+    description: `${product.koleksiyonu} • ${product.renk} • ${product.olcusu}`,
+  };
+}
