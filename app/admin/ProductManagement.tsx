@@ -17,7 +17,8 @@ interface FormData {
   olcusu: string;
   renk: string;
   finish: string;
-  imagePath: string;
+  files: File[];
+  previews: string[];
   slug: string;
 }
 
@@ -34,7 +35,8 @@ export default function ProductManagement() {
     olcusu: '',
     renk: '',
     finish: '',
-    imagePath: '',
+    files: [],
+    previews: [],
     slug: ''
   });
 
@@ -78,18 +80,20 @@ export default function ProductManagement() {
     
     try {
       const slug = formData.slug || createSlug(formData.koleksiyonu, formData.olcusu, formData.renk);
-      const productData = {
-        ...formData,
-        slug,
-        finish: formData.finish || null
-      };
 
       if (editingProduct) {
         // Mise à jour
+        // Not: Çoklu görsel güncellemesi API tarafında ayrı akış gerektirir; burada temel alanları güncelliyoruz
         const response = await fetch(`/api/products/${editingProduct.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData)
+          body: JSON.stringify({
+            koleksiyonu: formData.koleksiyonu,
+            olcusu: formData.olcusu,
+            renk: formData.renk,
+            finish: formData.finish || null,
+            slug,
+          })
         });
         
         if (response.ok) {
@@ -99,12 +103,16 @@ export default function ProductManagement() {
           throw new Error('Échec de la mise à jour');
         }
       } else {
-        // Ajout d’un nouveau produit
-        const response = await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData)
-        });
+        // Ajout d’un nouveau produit (multipart + multi images)
+        const fd = new FormData();
+        fd.append('koleksiyonu', formData.koleksiyonu);
+        fd.append('olcusu', formData.olcusu);
+        fd.append('renk', formData.renk);
+        if (formData.finish) fd.append('finish', formData.finish);
+        fd.append('slug', slug);
+        for (const f of formData.files) fd.append('files', f);
+
+        const response = await fetch('/api/products', { method: 'POST', body: fd });
         
         if (response.ok) {
           await fetchProducts();
@@ -118,7 +126,8 @@ export default function ProductManagement() {
         olcusu: '',
         renk: '',
         finish: '',
-        imagePath: '',
+        files: [],
+        previews: [],
         slug: ''
       });
       setShowAddForm(false);
@@ -256,16 +265,32 @@ export default function ProductManagement() {
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Image (chemin) *
+                Images *
               </label>
               <input
-                type="text"
-                value={formData.imagePath}
-                onChange={(e) => setFormData({...formData, imagePath: e.target.value})}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  const files = e.target.files ? Array.from(e.target.files) : [];
+                  setFormData({
+                    ...formData,
+                    files,
+                    previews: files.map((f) => URL.createObjectURL(f)),
+                  });
+                }}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Ex.: /Urun_Gorselleri/Atlantis/atlantis-blanc.jpg"
               />
+              {formData.previews.length > 0 && (
+                <div className="mt-3 grid grid-cols-2 md:grid-cols-4 gap-3">
+                  {formData.previews.map((src, i) => (
+                    <div key={i} className="aspect-square overflow-hidden rounded border">
+                      <img src={src} alt={`preview-${i}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             <div className="md:col-span-2">

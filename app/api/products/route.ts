@@ -53,21 +53,75 @@ export async function GET(request: NextRequest) {
 // POST /api/products – yeni ürün ekle
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const { koleksiyonu, olcusu, renk, finish, imagePath, slug } = data;
-    if (!koleksiyonu || !olcusu || !renk || !imagePath || !slug) {
-      return NextResponse.json({ error: 'Eksik alan' }, { status: 400 });
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      // JSON body desteği (geri uyumluluk)
+      const data = await request.json();
+      const { koleksiyonu, olcusu, renk, finish, imagePath, slug } = data;
+      if (!koleksiyonu || !olcusu || !renk || !imagePath || !slug) {
+        return NextResponse.json({ error: 'Champs manquants' }, { status: 400 });
+      }
+      const product = await prisma.product.create({
+        data: { koleksiyonu, olcusu, renk, finish: finish ?? null, imagePath, slug },
+      });
+      return NextResponse.json(product, { status: 201 });
     }
 
+    // multipart/form-data ile çoklu dosya yükleme
+    const form = await request.formData();
+    const koleksiyonu = String(form.get('koleksiyonu') || '');
+    const olcusu = String(form.get('olcusu') || '');
+    const renk = String(form.get('renk') || '');
+    const finish = form.get('finish') ? String(form.get('finish')) : null;
+    const slug = String(form.get('slug') || '');
+
+    if (!koleksiyonu || !olcusu || !renk || !slug) {
+      return NextResponse.json({ error: 'Champs manquants' }, { status: 400 });
+    }
+
+    // files[] alanını topla
+    const files: File[] = [];
+    const maybeFiles = form.getAll('files');
+    for (const f of maybeFiles) {
+      if (f instanceof File) files.push(f);
+    }
+
+    if (files.length === 0) {
+      return NextResponse.json({ error: 'Aucun fichier fourni' }, { status: 400 });
+    }
+
+    // Her dosyayı /api/upload ile kaydet ve yolları topla
+    const uploaded: string[] = [];
+    for (const f of files) {
+      const fd = new FormData();
+      fd.append('file', f);
+      const res = await fetch(new URL('/api/upload', request.url), {
+        method: 'POST',
+        body: fd,
+        headers: { authorization: request.headers.get('authorization') || '' },
+      });
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({} as any));
+        return NextResponse.json({ error: j?.error || 'Erreur de téléchargement' }, { status: 500 });
+      }
+      const { url } = await res.json();
+      uploaded.push(url.startsWith('/') ? url.slice(1) : url);
+    }
+
+    // Ana görsel olarak ilkini imagePath’e yaz, diğerlerini ProductImage olarak kaydet
     const product = await prisma.product.create({
       data: {
         koleksiyonu,
         olcusu,
         renk,
-        finish: finish ?? null,
-        imagePath,
+        finish,
+        imagePath: uploaded[0],
         slug,
+        images: {
+          create: uploaded.map((p, idx) => ({ imagePath: p, order: idx })),
+        },
       },
+      include: { images: true },
     });
 
     return NextResponse.json(product, { status: 201 });
