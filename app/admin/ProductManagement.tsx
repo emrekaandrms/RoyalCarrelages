@@ -39,6 +39,7 @@ export default function ProductManagement() {
     previews: [],
     slug: ''
   });
+  const [submitting, setSubmitting] = useState(false);
 
   // Charger les produits
   const fetchProducts = async () => {
@@ -79,6 +80,7 @@ export default function ProductManagement() {
     e.preventDefault();
     
     try {
+      setSubmitting(true);
       const slug = formData.slug || createSlug(formData.koleksiyonu, formData.olcusu, formData.renk);
 
       if (editingProduct) {
@@ -117,7 +119,9 @@ export default function ProductManagement() {
         if (response.ok) {
           await fetchProducts();
         } else {
-          throw new Error('Échec de l’ajout');
+          let msg = 'Échec de l’ajout';
+          try { const j = await response.json(); if (j?.error) msg = j.error; } catch {}
+          throw new Error(msg);
         }
       }
       
@@ -132,9 +136,11 @@ export default function ProductManagement() {
       });
       setShowAddForm(false);
     } catch (error) {
+      const msg = (error as any)?.message || 'Une erreur s’est produite pendant l’opération';
       console.error('Erreur d’opération:', error);
-      alert('Une erreur s’est produite pendant l’opération');
+      alert(msg);
     }
+    finally { setSubmitting(false); }
   };
 
   const handleEdit = (product: Product) => {
@@ -314,9 +320,10 @@ export default function ProductManagement() {
             <div className="md:col-span-2 flex space-x-4">
               <button
                 type="submit"
-                className="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap"
+                disabled={submitting}
+                className={`bg-gray-800 text-white px-6 py-2 rounded transition-colors cursor-pointer whitespace-nowrap ${submitting ? 'opacity-60 cursor-not-allowed' : 'hover:bg-gray-700'}`}
               >
-                {editingProduct ? 'Mettre à jour' : 'Ajouter'}
+                {submitting ? 'Enregistrement...' : (editingProduct ? 'Mettre à jour' : 'Ajouter')}
               </button>
               <button
                 type="button"
