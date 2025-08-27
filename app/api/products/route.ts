@@ -48,8 +48,13 @@ export async function GET(request: NextRequest) {
       totalCount,
     });
   } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+    console.error('POST /api/products error:', err);
+    // Prisma unique constraint violation (slug)
+    const message = (err as any)?.message || 'Internal Server Error';
+    if (typeof (err as any)?.code === 'string' && (err as any).code === 'P2002') {
+      return NextResponse.json({ error: 'Slug déjà utilisé' }, { status: 409 });
+    }
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
@@ -132,8 +137,11 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json(product, { status: 201 });
-  } catch (err) {
-    console.error(err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  } catch (err: any) {
+    console.error('POST /api/products error:', err);
+    if (typeof err?.code === 'string' && err.code === 'P2002') {
+      return NextResponse.json({ error: 'Slug déjà utilisé' }, { status: 409 });
+    }
+    return NextResponse.json({ error: err?.message || 'Internal Server Error' }, { status: 500 });
   }
 } 
