@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { writeFile, mkdir } from 'fs/promises';
+import path from 'path';
+import crypto from 'crypto';
 
 export const preferredRegion = 'cdg1';
 
@@ -90,22 +93,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Aucun fichier fourni' }, { status: 400 });
     }
 
-    // Her dosyayı /api/upload ile kaydet ve yolları topla
+    // Her dosyayı yerelde kaydet ve yolları topla (upload API'ye ihtiyaç yok)
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const maxSize = 10 * 1024 * 1024; // 10MB
     const uploaded: string[] = [];
-    for (const f of files) {
-      const fd = new FormData();
-      fd.append('file', f);
-      const res = await fetch(new URL('/api/upload', request.url), {
-        method: 'POST',
-        body: fd,
-        headers: { authorization: request.headers.get('authorization') || '' },
-      });
-      if (!res.ok) {
-        const j = await res.json().catch(() => ({} as any));
-        return NextResponse.json({ error: j?.error || 'Erreur de téléchargement' }, { status: 500 });
+    const uploadDir = path.join(process.cwd(), 'public', 'uploads');
+    await mkdir(uploadDir, { recursive: true });
+
+    for (const file of files) {
+      if (!allowedTypes.includes(file.type)) {
+        return NextResponse.json({ error: 'Type de fichier invalide' }, { status: 400 });
       }
-      const { url } = await res.json();
-      uploaded.push(url.startsWith('/') ? url.slice(1) : url);
+      if (file.size > maxSize) {
+        return NextResponse.json({ error: 'Taille du fichier dépasse 10MB' }, { status: 400 });
+      }
+      const buffer = Buffer.from(await file.arrayBuffer());
+      const fileExtension = path.extname(file.name) || '.jpg';
+      const uniqueFilename = `${Date.now()}_${crypto.randomBytes(8).toString('hex')}${fileExtension}`;
+      const filePath = path.join(uploadDir, uniqueFilename);
+      await writeFile(filePath, buffer);
+      uploaded.push(path.posix.join('uploads', uniqueFilename));
     }
 
     // Ana görsel olarak ilkini imagePath’e yaz, diğerlerini ProductImage olarak kaydet
