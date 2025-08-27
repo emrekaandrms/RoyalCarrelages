@@ -77,15 +77,18 @@ export async function POST(request: Request) {
 
     // multipart/form-data ile çoklu dosya yükleme
     const form = await request.formData();
-    const koleksiyonu = String(form.get('koleksiyonu') || '');
-    const olcusu = String(form.get('olcusu') || '');
-    const renk = String(form.get('renk') || '');
-    const finish = form.get('finish') ? String(form.get('finish')) : null;
-    const slug = String(form.get('slug') || '');
+    const koleksiyonu = String(form.get('koleksiyonu') || '').trim();
+    const olcusu = String(form.get('olcusu') || '').trim();
+    const renk = String(form.get('renk') || '').trim();
+    const finish = form.get('finish') ? String(form.get('finish')).trim() : null;
+    const slug = String(form.get('slug') || '').trim();
 
     if (!koleksiyonu || !olcusu || !renk || !slug) {
       return NextResponse.json({ error: 'Champs manquants' }, { status: 400 });
     }
+
+    // Debug: form alanları ve dosyalar
+    console.log('Create product request', { koleksiyonu, olcusu, renk, finish, slug });
 
     // files[] alanını topla
     const files: File[] = [];
@@ -118,6 +121,12 @@ export async function POST(request: Request) {
       const filePath = path.join(uploadDir, uniqueFilename);
       await writeFile(filePath, buffer);
       uploaded.push(path.posix.join('uploads', uniqueFilename));
+    }
+
+    // Slug çakışması var mı?
+    const existing = await prisma.product.findUnique({ where: { slug } });
+    if (existing) {
+      return NextResponse.json({ error: 'Slug déjà utilisé' }, { status: 409 });
     }
 
     // Ana görsel olarak ilkini imagePath’e yaz, diğerlerini ProductImage olarak kaydet
