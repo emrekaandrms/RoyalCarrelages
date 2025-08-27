@@ -4,14 +4,16 @@ import { useState } from 'react';
 import { useLanguage } from '@/lib/language-context';
 import Link from 'next/link';
 
+interface ProductImage { id: string; imagePath: string; order: number }
 interface Product {
-  id: number;
+  id: string;
   koleksiyonu: string;
   olcusu: string;
   renk: string;
-  finish?: string;
+  finish?: string | null;
   imagePath: string;
   slug: string;
+  images?: ProductImage[];
 }
 
 interface ProductDetailProps {
@@ -63,22 +65,26 @@ export default function ProductDetail({ product }: ProductDetailProps) {
                     {t.product.zoom}
                   </div>
                 </div>
+                {product.images && product.images.length > 1 && (
+                  <div className="grid grid-cols-4 gap-4 mb-2">
+                    {product.images.slice(0, 4).map((img) => (
+                      <div key={img.id} className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+                        <img src={`/${img.imagePath}`} alt="thumb" className="w-full h-full object-cover" />
+                      </div>
+                    ))}
+                  </div>
+                )}
                 
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                    <img
-                      src={`/${product.imagePath}`}
-                      alt={`${product.koleksiyonu} ${t.product.detail1}`}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  </div>
-                  <div className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow">
-                    <img
-                      src={`/${product.imagePath}`}
-                      alt={`${product.koleksiyonu} ${t.product.detail2}`}
-                      className="w-full h-full object-cover object-center"
-                    />
-                  </div>
+                  {(product.images && product.images.length > 0 ? product.images.slice(0, 2) : [{ imagePath: product.imagePath } as any, { imagePath: product.imagePath } as any]).map((img, idx) => (
+                    <div key={idx} className="aspect-square bg-white rounded-lg overflow-hidden shadow-sm cursor-pointer hover:shadow-md transition-shadow">
+                      <img
+                        src={`/${img.imagePath}`}
+                        alt={`${product.koleksiyonu} detail ${idx + 1}`}
+                        className="w-full h-full object-cover object-center"
+                      />
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
