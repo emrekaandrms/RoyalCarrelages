@@ -144,7 +144,8 @@ export default function ProductManagement() {
       olcusu: product.olcusu,
       renk: product.renk,
       finish: product.finish || '',
-      imagePath: product.imagePath,
+      files: [],
+      previews: [],
       slug: product.slug
     });
     setShowAddForm(true);
@@ -190,7 +191,8 @@ export default function ProductManagement() {
               olcusu: '',
               renk: '',
               finish: '',
-              imagePath: '',
+              files: [],
+              previews: [],
               slug: ''
             });
           }}
@@ -279,7 +281,7 @@ export default function ProductManagement() {
                     previews: files.map((f) => URL.createObjectURL(f)),
                   });
                 }}
-                required
+                required={!editingProduct}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
               />
               {formData.previews.length > 0 && (
