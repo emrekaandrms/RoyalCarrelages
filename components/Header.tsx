@@ -57,9 +57,9 @@ export default function Header() {
         <div className="hidden md:flex items-center space-x-8">
           {[
             { href: '/collections', label: t.nav.collections },
-            { href: '/tiles', label: t.nav.tiles },
+            { href: '/carrelages', label: t.nav.tiles },
             { href: '/contact', label: t.nav.contact },
-            { href: '/professionals', label: t.nav.professionals }
+            { href: '/professionnels', label: t.nav.professionals }
           ].map(({ href, label }) => (
             <Link
               key={href}
@@ -113,7 +113,7 @@ export default function Header() {
             {t.nav.collections}
           </Link>
           <Link
-            href="/tiles"
+            href="/carrelages"
             onClick={() => setIsMenuOpen(false)}
             className="text-gray-700 hover:text-blue-600 transition-colors"
           >
@@ -127,7 +127,7 @@ export default function Header() {
             {t.nav.contact}
           </Link>
           <Link
-            href="/professionals"
+            href="/professionnels"
             onClick={() => setIsMenuOpen(false)}
             className="text-gray-700 hover:text-blue-600 transition-colors"
           >

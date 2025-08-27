@@ -28,6 +28,25 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  async redirects() {
+    return [
+      {
+        source: '/tiles',
+        destination: '/carrelages',
+        permanent: true,
+      },
+      {
+        source: '/tiles/:slug',
+        destination: '/carrelages/:slug',
+        permanent: true,
+      },
+      {
+        source: '/professionals',
+        destination: '/professionnels',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

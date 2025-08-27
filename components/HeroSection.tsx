@@ -61,7 +61,7 @@ export default function HeroSection() {
               {t.hero.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link href="/tiles" className="bg-white text-gray-800 px-8 py-4 hover:bg-gray-100 transition-colors cursor-pointer whitespace-nowrap font-medium">
+              <Link href="/carrelages" className="bg-white text-gray-800 px-8 py-4 hover:bg-gray-100 transition-colors cursor-pointer whitespace-nowrap font-medium">
                 {t.hero.exploreBtn}
               </Link>
               <Link href="/contact" className="border-2 border-white text-white px-8 py-4 hover:bg-white hover:text-gray-800 transition-colors cursor-pointer whitespace-nowrap font-medium">

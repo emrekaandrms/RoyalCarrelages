@@ -6,9 +6,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const staticUrls: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, changeFrequency: 'weekly', priority: 1 },
-    { url: `${baseUrl}/tiles`, changeFrequency: 'weekly', priority: 0.9 },
+    { url: `${baseUrl}/carrelages`, changeFrequency: 'weekly', priority: 0.9 },
     { url: `${baseUrl}/contact`, changeFrequency: 'yearly', priority: 0.5 },
-    { url: `${baseUrl}/professionals`, changeFrequency: 'yearly', priority: 0.5 },
+    { url: `${baseUrl}/professionnels`, changeFrequency: 'yearly', priority: 0.5 },
   ];
 
   let productUrls: MetadataRoute.Sitemap = [];
@@ -17,7 +17,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     productUrls = products
       .filter((p) => p.slug)
       .map((p) => ({
-        url: `${baseUrl}/tiles/${p.slug}`,
+        url: `${baseUrl}/carrelages/${p.slug}`,
         changeFrequency: 'monthly' as const,
         priority: 0.8,
       }));

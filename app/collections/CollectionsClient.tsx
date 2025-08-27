@@ -34,7 +34,7 @@ export default function CollectionsClient({ collections }: CollectionsClientProp
             {collections.map((collection) => (
               <Link
                 key={collection.koleksiyonu}
-                href={`/tiles?search=${encodeURIComponent(collection.koleksiyonu)}`}
+                href={`/carrelages?search=${encodeURIComponent(collection.koleksiyonu)}`}
                 className="bg-white shadow-sm rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
               >
                 <div className="aspect-square relative bg-gray-100">
@@ -57,7 +57,7 @@ export default function CollectionsClient({ collections }: CollectionsClientProp
           
           <div className="text-center mt-12">
             <Link
-              href="/tiles"
+              href="/carrelages"
               className="inline-block bg-gray-800 text-white px-8 py-3 rounded hover:bg-gray-700 transition-colors"
             >
               {t.collections.viewAll} →

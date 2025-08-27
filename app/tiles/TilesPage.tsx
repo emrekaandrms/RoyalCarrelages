@@ -140,7 +140,7 @@ export default function TilesPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredTiles.map((tile) => (
-              <Link key={tile.id} href={`/tiles/${tile.id}`} className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 group cursor-pointer">
+              <Link key={tile.id} href={`/carrelages/${tile.id}`} className="bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 group cursor-pointer">
                 <div className="aspect-square overflow-hidden rounded-t-lg">
                   <img
                     src={tile.image}

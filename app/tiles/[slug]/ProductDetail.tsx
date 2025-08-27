@@ -42,7 +42,7 @@ export default function ProductDetail({ product }: ProductDetailProps) {
       <div className="pt-24 pb-16">
         <div className="max-w-7xl mx-auto px-8">
           <div className="mb-8">
-            <Link href="/tiles" className="text-gray-600 hover:text-gray-800 flex items-center gap-2">
+            <Link href="/carrelages" className="text-gray-600 hover:text-gray-800 flex items-center gap-2">
               <i className="ri-arrow-left-line"></i>
               {t.product.backToCollection}
             </Link>

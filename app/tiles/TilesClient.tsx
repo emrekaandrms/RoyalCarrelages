@@ -134,7 +134,7 @@ export default function TilesClient({
       }
     }
 
-    router.push(`/tiles?${newSearchParams.toString()}`);
+    router.push(`/carrelages?${newSearchParams.toString()}`);
   };
 
   const handleSizeChange = (size: string) => {
@@ -314,7 +314,7 @@ export default function TilesClient({
                     product.slug ? (
                       <Link
                         key={product.id}
-                        href={`/tiles/${product.slug}`}
+                        href={`/carrelages/${product.slug}`}
                         className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-200 hover:border-gray-400 transform hover:-translate-y-1"
                       >
                         <div className="aspect-square overflow-hidden">

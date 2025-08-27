@@ -30,7 +30,7 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-medium mb-4">{t.footer.products}</h4>
             <ul className="space-y-2">
-              <li><Link href="/tiles" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.ceramic_tiles}</Link></li>
+              <li><Link href="/carrelages" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.ceramic_tiles}</Link></li>
               {/* Kullanılmayan veya 404 olan bağlantıları kaldırdık */}
             </ul>
           </div>

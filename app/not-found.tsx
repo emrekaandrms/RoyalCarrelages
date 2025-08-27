@@ -23,7 +23,7 @@ export default function NotFound() {
               <Link href="/" className="bg-gray-900 text-white px-6 py-3 rounded-lg hover:bg-black transition-colors cursor-pointer">
                 Revenir à l'accueil
               </Link>
-              <Link href="/tiles" className="border border-gray-300 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
+              <Link href="/carrelages" className="border border-gray-300 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-50 transition-colors cursor-pointer">
                 Voir les carreaux
               </Link>
             </div>

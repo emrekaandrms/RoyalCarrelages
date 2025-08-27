@@ -96,7 +96,7 @@ export default function TileGrid() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {(featured.length > 0 ? featured : fallback).map((item, idx) => (
-            <Link key={idx} href={`/tiles/${item.slug}`} className="group cursor-pointer">
+            <Link key={idx} href={`/carrelages/${item.slug}`} className="group cursor-pointer">
               <div className="aspect-square overflow-hidden bg-white shadow-sm hover:shadow-lg transition-shadow duration-300">
                 <img
                   src={item.image}
@@ -114,7 +114,7 @@ export default function TileGrid() {
         </div>
 
         <div className="text-center mt-16">
-          <Link href="/tiles" className="bg-gray-800 text-white px-10 py-4 hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap font-medium inline-block">
+          <Link href="/carrelages" className="bg-gray-800 text-white px-10 py-4 hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap font-medium inline-block">
             {t.tileGrid.viewAllBtn}
           </Link>
         </div>
