@@ -1,5 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+function safeEqual(a: string, b: string): boolean {
+  const len = Math.max(a.length, b.length);
+  let result = 0;
+  for (let i = 0; i < len; i++) {
+    const ca = a.charCodeAt(i) || 0;
+    const cb = b.charCodeAt(i) || 0;
+    result |= ca ^ cb;
+  }
+  return result === 0 && a.length === b.length;
+}
+
 function isBasicAuthValid(authorizationHeader: string | null): boolean {
   if (!authorizationHeader?.startsWith('Basic ')) return false;
   const base64Credentials = authorizationHeader.split(' ')[1];
@@ -8,12 +19,10 @@ function isBasicAuthValid(authorizationHeader: string | null): boolean {
       ? atob(base64Credentials)
       : Buffer.from(base64Credentials, 'base64').toString('utf-8');
     const [user, pass] = decoded.split(':');
-    return (
-      !!user &&
-      !!pass &&
-      user === process.env.ADMIN_USER &&
-      pass === process.env.ADMIN_PASS
-    );
+    const envUser = process.env.ADMIN_USER || '';
+    const envPass = process.env.ADMIN_PASS || '';
+    if (!envUser || !envPass) return false;
+    return safeEqual(user, envUser) && safeEqual(pass, envPass);
   } catch {
     return false;
   }
