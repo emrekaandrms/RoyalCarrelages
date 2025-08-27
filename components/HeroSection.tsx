@@ -37,7 +37,7 @@ export default function HeroSection() {
       {slides.length > 0 ? (
         <div className="absolute inset-0">
           <div className="h-full w-full">
-            {/* Basit slider: her 5sn'de bir değişim */}
+            {/* Geliştirilmiş slider: fade geçiş, manuel kontrol, süre artırıldı */}
             <HeroSlider slides={slides} />
           </div>
         </div>
@@ -77,27 +77,65 @@ export default function HeroSection() {
 
 function HeroSlider({ slides }: { slides: Array<{ imageUrl: string; title: string; subtitle?: string; link?: string; buttonText?: string }> }) {
   const [index, setIndex] = useState(0);
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const id = setInterval(() => {
-      setIndex((i) => (i + 1) % slides.length);
-    }, 5000);
+      if (!isHovering) {
+        setIndex((i) => (i + 1) % slides.length);
+      }
+    }, 7000);
     return () => clearInterval(id);
-  }, [slides.length]);
+  }, [slides.length, isHovering]);
 
   const slide = slides[index];
   return (
     <div
-      className="h-full w-full bg-cover bg-center bg-no-repeat"
-      style={{
-        backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${slide.imageUrl}')`,
-      }}
+      className="h-full w-full relative"
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
     >
+      {/* Slides */}
+      <div className="absolute inset-0">
+        {slides.map((s, i) => (
+          <div
+            key={i}
+            className={`absolute inset-0 bg-cover bg-center bg-no-repeat transition-opacity duration-700 ${i === index ? 'opacity-100' : 'opacity-0'}`}
+            style={{
+              backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url('${s.imageUrl}')`,
+            }}
+          />
+        ))}
+      </div>
+
       {/* Indicators */}
       <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
         {slides.map((_, i) => (
-          <span key={i} className={`w-2.5 h-2.5 rounded-full ${i === index ? 'bg-white' : 'bg-white/50'}`}></span>
+          <button
+            key={i}
+            aria-label={`Go to slide ${i + 1}`}
+            onClick={() => setIndex(i)}
+            className={`w-2.5 h-2.5 rounded-full ${i === index ? 'bg-white' : 'bg-white/50'} hover:bg-white transition-colors`}
+          />
         ))}
+      </div>
+
+      {/* Controls */}
+      <div className="absolute inset-y-0 left-0 right-0 flex items-center justify-between px-4 z-10">
+        <button
+          aria-label="Previous slide"
+          onClick={() => setIndex((index - 1 + slides.length) % slides.length)}
+          className="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors"
+        >
+          ‹
+        </button>
+        <button
+          aria-label="Next slide"
+          onClick={() => setIndex((index + 1) % slides.length)}
+          className="p-2 rounded-full bg-black/30 text-white hover:bg-black/50 transition-colors"
+        >
+          ›
+        </button>
       </div>
     </div>
   );

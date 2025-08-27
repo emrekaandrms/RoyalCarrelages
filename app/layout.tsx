@@ -42,6 +42,28 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning={true}>
+      <head>
+        {/* Canonical */}
+        <link rel="canonical" href="https://www.royal-carrelages.example" />
+        {/* Robots default */}
+        <meta name="robots" content="index, follow" />
+        {/* GA ölçüm kimliği env ile */}
+        {process.env.NEXT_PUBLIC_GA_ID || process.env.NEXT_PUBLIC_GADS_ID ? (
+          <>
+            <script async src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID || process.env.NEXT_PUBLIC_GADS_ID}`}></script>
+            <script
+              dangerouslySetInnerHTML={{
+                __html: `
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);} gtag('js', new Date());
+                  ${process.env.NEXT_PUBLIC_GA_ID ? `gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', { anonymize_ip: true });` : ''}
+                  ${process.env.NEXT_PUBLIC_GADS_ID ? `gtag('config', '${process.env.NEXT_PUBLIC_GADS_ID}');` : ''}
+                `,
+              }}
+            />
+          </>
+        ) : null}
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${pacifico.variable} antialiased`}
       >

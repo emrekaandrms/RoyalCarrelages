@@ -56,12 +56,24 @@ export default function TilesClient({
   // Get unique sizes and colors from all products
   const sizes = useMemo(() => {
     const set = new Set(initialProducts.map((p) => p.olcusu));
-    return Array.from(set).sort();
+    return Array.from(set).sort((a, b) => {
+      // Boyutları sayısal olarak mantıklı sıralamaya çalış: önce genişlik x yükseklik değerlerini ayıkla
+      const parse = (v: string) => {
+        const m = v.match(/(\d+)[^\d]+(\d+)/);
+        if (!m) return [Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER];
+        return [parseInt(m[1], 10), parseInt(m[2], 10)];
+      };
+      const [aw, ah] = parse(a);
+      const [bw, bh] = parse(b);
+      if (aw !== bw) return aw - bw;
+      if (ah !== bh) return ah - bh;
+      return a.localeCompare(b);
+    });
   }, [initialProducts]);
 
   const colors = useMemo(() => {
     const set = new Set(initialProducts.map((p) => p.renk));
-    return Array.from(set).sort();
+    return Array.from(set).sort((a, b) => a.localeCompare(b, 'tr')); // alfabetik stabil sıralama
   }, [initialProducts]);
 
   // Filter products based on selected filters

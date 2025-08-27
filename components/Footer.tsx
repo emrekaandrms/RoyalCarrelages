@@ -31,9 +31,7 @@ export default function Footer() {
             <h4 className="text-lg font-medium mb-4">{t.footer.products}</h4>
             <ul className="space-y-2">
               <li><Link href="/tiles" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.ceramic_tiles}</Link></li>
-              
-              <li><Link href="/accessories" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.accessories}</Link></li>
-              <li><Link href="/collections" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.collections}</Link></li>
+              {/* Kullanılmayan veya 404 olan bağlantıları kaldırdık */}
             </ul>
           </div>
 
@@ -41,9 +39,7 @@ export default function Footer() {
             <h4 className="text-lg font-medium mb-4">{t.footer.services}</h4>
             <ul className="space-y-2">
               <li><Link href="/professionals" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.for_professionals}</Link></li>
-              <li><Link href="/consultation" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.design_consultation}</Link></li>
-              <li><Link href="/installation" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.installation}</Link></li>
-              <li><Link href="/support" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.support}</Link></li>
+              <li><Link href="/contact" className="text-gray-300 hover:text-white transition-colors cursor-pointer">{t.footer.design_consultation}</Link></li>
             </ul>
           </div>
 
@@ -63,8 +59,7 @@ export default function Footer() {
             © 2024 Tile Brand. {t.footer.rights}
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="/privacy" className="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">{t.footer.privacy}</Link>
-            <Link href="/terms" className="text-gray-400 hover:text-white text-sm transition-colors cursor-pointer">{t.footer.terms}</Link>
+            {/* Gizlilik/şartlar sayfaları yoksa devre dışı bıraktık */}
           </div>
         </div>
       </div>

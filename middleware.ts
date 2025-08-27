@@ -34,7 +34,12 @@ export function middleware(request: NextRequest) {
     (pathname.startsWith('/api/upload') && method !== 'GET');
 
   if (!needsAuth) {
-    return NextResponse.next();
+    // Admin sayfaları ve API'ler için noindex header ekleyelim
+    const res = NextResponse.next();
+    if (pathname.startsWith('/admin') || pathname.startsWith('/api')) {
+      res.headers.set('X-Robots-Tag', 'noindex, nofollow');
+    }
+    return res;
   }
 
   const authHeader = request.headers.get('authorization');
