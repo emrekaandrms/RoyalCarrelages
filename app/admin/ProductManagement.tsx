@@ -38,7 +38,7 @@ export default function ProductManagement() {
     slug: ''
   });
 
-  // Ürünleri yükle
+  // Charger les produits
   const fetchProducts = async () => {
     try {
       setLoading(true);
@@ -47,7 +47,7 @@ export default function ProductManagement() {
       setProducts(data.products || []);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
-      console.error('Ürünler yüklenirken hata:', error);
+      console.error('Erreur lors du chargement des produits:', error);
     } finally {
       setLoading(false);
     }
@@ -57,7 +57,7 @@ export default function ProductManagement() {
     fetchProducts();
   }, [page, limit]);
 
-  // Slug oluşturma fonksiyonu
+  // Fonction de création de slug
   const createSlug = (koleksiyon: string, olcu: string, renk: string) => {
     return `${koleksiyon}-${olcu}-${renk}`
       .toLowerCase()
@@ -72,7 +72,7 @@ export default function ProductManagement() {
       .replace(/^-|-$/g, '');
   };
 
-  // Form submit
+  // Soumission du formulaire
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -85,7 +85,7 @@ export default function ProductManagement() {
       };
 
       if (editingProduct) {
-        // Güncelleme
+        // Mise à jour
         const response = await fetch(`/api/products/${editingProduct.id}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
@@ -96,10 +96,10 @@ export default function ProductManagement() {
           await fetchProducts();
           setEditingProduct(null);
         } else {
-          throw new Error('Güncelleme başarısız');
+          throw new Error('Échec de la mise à jour');
         }
       } else {
-        // Yeni ürün ekleme
+        // Ajout d’un nouveau produit
         const response = await fetch('/api/products', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -109,7 +109,7 @@ export default function ProductManagement() {
         if (response.ok) {
           await fetchProducts();
         } else {
-          throw new Error('Ekleme başarısız');
+          throw new Error('Échec de l’ajout');
         }
       }
       
@@ -123,8 +123,8 @@ export default function ProductManagement() {
       });
       setShowAddForm(false);
     } catch (error) {
-      console.error('İşlem hatası:', error);
-      alert('İşlem sırasında bir hata oluştu');
+      console.error('Erreur d’opération:', error);
+      alert('Une erreur s’est produite pendant l’opération');
     }
   };
 
@@ -142,7 +142,7 @@ export default function ProductManagement() {
   };
 
   const handleDelete = async (id: string) => {
-    if (confirm('Bu ürünü silmek istediğinizden emin misiniz?')) {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce produit ?')) {
       try {
         const response = await fetch(`/api/products/${id}`, {
           method: 'DELETE'
@@ -151,11 +151,11 @@ export default function ProductManagement() {
         if (response.ok) {
           await fetchProducts();
         } else {
-          throw new Error('Silme başarısız');
+          throw new Error('Échec de la suppression');
         }
       } catch (error) {
-        console.error('Silme hatası:', error);
-        alert('Silme sırasında bir hata oluştu');
+        console.error('Erreur de suppression:', error);
+        alert('Une erreur s’est produite lors de la suppression');
       }
     }
   };
@@ -163,7 +163,7 @@ export default function ProductManagement() {
   if (loading) {
     return (
       <div className="p-6 flex justify-center items-center">
-        <div className="text-gray-600">Ürünler yükleniyor...</div>
+        <div className="text-gray-600">Chargement des produits...</div>
       </div>
     );
   }
@@ -171,7 +171,7 @@ export default function ProductManagement() {
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-light text-gray-800">Ürün Yönetimi</h2>
+        <h2 className="text-2xl font-light text-gray-800">Gestion des Produits</h2>
         <button
           onClick={() => {
             setShowAddForm(true);
@@ -188,20 +188,20 @@ export default function ProductManagement() {
           className="flex items-center bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap"
         >
           <i className="ri-add-line mr-2"></i>
-          Yeni Ürün Ekle
+          Ajouter un produit
         </button>
       </div>
 
       {showAddForm && (
         <div className="bg-gray-50 p-6 rounded-lg mb-6">
           <h3 className="text-lg font-medium text-gray-800 mb-4">
-            {editingProduct ? 'Ürünü Düzenle' : 'Yeni Ürün Ekle'}
+            {editingProduct ? 'Modifier le produit' : 'Ajouter un produit'}
           </h3>
           
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Koleksiyon *
+                Collection *
               </label>
               <input
                 type="text"
@@ -209,13 +209,13 @@ export default function ProductManagement() {
                 onChange={(e) => setFormData({...formData, koleksiyonu: e.target.value})}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Örn: Atlantis"
+                placeholder="Ex.: Atlantis"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Ölçü *
+                Taille *
               </label>
               <input
                 type="text"
@@ -223,13 +223,13 @@ export default function ProductManagement() {
                 onChange={(e) => setFormData({...formData, olcusu: e.target.value})}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Örn: 60x120"
+                placeholder="Ex.: 60x120"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Renk *
+                Couleur *
               </label>
               <input
                 type="text"
@@ -237,26 +237,26 @@ export default function ProductManagement() {
                 onChange={(e) => setFormData({...formData, renk: e.target.value})}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Örn: Beyaz"
+                placeholder="Ex.: Blanc"
               />
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Finish
+                Finition
               </label>
               <input
                 type="text"
                 value={formData.finish}
                 onChange={(e) => setFormData({...formData, finish: e.target.value})}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Örn: Mat"
+                placeholder="Ex.: Mat"
               />
             </div>
 
             <div className="md:col-span-2">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Görsel Yolu *
+                Image (chemin) *
               </label>
               <input
                 type="text"
@@ -264,7 +264,7 @@ export default function ProductManagement() {
                 onChange={(e) => setFormData({...formData, imagePath: e.target.value})}
                 required
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Örn: /Urun_Gorselleri/Atlantis/atlantis-beyaz.jpg"
+                placeholder="Ex.: /Urun_Gorselleri/Atlantis/atlantis-blanc.jpg"
               />
             </div>
 
@@ -277,10 +277,10 @@ export default function ProductManagement() {
                 value={formData.slug}
                 onChange={(e) => setFormData({...formData, slug: e.target.value})}
                 className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-                placeholder="Boş bırakılırsa otomatik oluşturulur"
+                placeholder="Si laissé vide, sera généré automatiquement"
               />
               <p className="text-xs text-gray-500 mt-1">
-                Boş bırakılırsa otomatik olarak koleksiyon-ölçü-renk şeklinde oluşturulur
+                Si laissé vide, il sera généré automatiquement sous la forme collection-taille-couleur
               </p>
             </div>
 
@@ -289,7 +289,7 @@ export default function ProductManagement() {
                 type="submit"
                 className="bg-gray-800 text-white px-6 py-2 rounded hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap"
               >
-                {editingProduct ? 'Güncelle' : 'Ekle'}
+                {editingProduct ? 'Mettre à jour' : 'Ajouter'}
               </button>
               <button
                 type="button"
@@ -299,7 +299,7 @@ export default function ProductManagement() {
                 }}
                 className="bg-gray-500 text-white px-6 py-2 rounded hover:bg-gray-600 transition-colors cursor-pointer whitespace-nowrap"
               >
-                İptal
+                Annuler
               </button>
             </div>
           </form>
@@ -310,12 +310,12 @@ export default function ProductManagement() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200">
-              <th className="text-left py-3 px-4 font-medium text-gray-700">Koleksiyon</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-700">Ölçü</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-700">Renk</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-700">Finish</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-700">Collection</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-700">Taille</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-700">Couleur</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-700">Finition</th>
               <th className="text-left py-3 px-4 font-medium text-gray-700">Slug</th>
-              <th className="text-left py-3 px-4 font-medium text-gray-700">İşlemler</th>
+              <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -333,14 +333,14 @@ export default function ProductManagement() {
                     <button
                       onClick={() => handleEdit(product)}
                       className="flex items-center text-blue-600 hover:text-blue-800 cursor-pointer"
-                      title="Düzenle"
+                      title="Modifier"
                     >
                       <i className="ri-edit-line"></i>
                     </button>
                     <button
                       onClick={() => handleDelete(product.id)}
                       className="flex items-center text-red-600 hover:text-red-800 cursor-pointer"
-                      title="Sil"
+                      title="Supprimer"
                     >
                       <i className="ri-delete-bin-line"></i>
                     </button>
@@ -351,16 +351,16 @@ export default function ProductManagement() {
           </tbody>
         </table>
         <div className="flex items-center justify-between mt-4">
-          <div className="text-sm text-gray-500">Sayfa {page} / {totalPages}</div>
+          <div className="text-sm text-gray-500">Page {page} / {totalPages}</div>
           <div className="space-x-2">
-            <button disabled={page<=1} onClick={() => setPage((p)=>Math.max(1,p-1))} className="px-3 py-1 border rounded disabled:opacity-50">Önceki</button>
-            <button disabled={page>=totalPages} onClick={() => setPage((p)=>Math.min(totalPages,p+1))} className="px-3 py-1 border rounded disabled:opacity-50">Sonraki</button>
+            <button disabled={page<=1} onClick={() => setPage((p)=>Math.max(1,p-1))} className="px-3 py-1 border rounded disabled:opacity-50">Précédent</button>
+            <button disabled={page>=totalPages} onClick={() => setPage((p)=>Math.min(totalPages,p+1))} className="px-3 py-1 border rounded disabled:opacity-50">Suivant</button>
           </div>
         </div>
         
         {products.length === 0 && (
           <div className="text-center py-8 text-gray-500">
-            Henüz ürün bulunmuyor. İlk ürününüzü ekleyin.
+            Aucun produit pour le moment. Ajoutez votre premier produit.
           </div>
         )}
       </div>
