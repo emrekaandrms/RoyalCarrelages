@@ -20,13 +20,15 @@ export default function HomeManagement() {
     Array.from({ length: 6 }, (_, i) => ({ position: i + 1, productId: '' }))
   );
   const [saving, setSaving] = useState(false);
+  const [imageOverrides, setImageOverrides] = useState<Record<number, string>>({});
 
   useEffect(() => {
     (async () => {
-      const [prodsRes, heroRes, featRes] = await Promise.all([
+      const [prodsRes, heroRes, featRes, overRes] = await Promise.all([
         fetch('/api/products?limit=200'),
         fetch('/api/settings/heroImageUrl'),
         fetch('/api/featured'),
+        fetch('/api/settings/featuredImageOverrides'),
       ]);
       if (prodsRes.ok) {
         const json = await prodsRes.json();
@@ -43,7 +45,19 @@ export default function HomeManagement() {
           setFeatured(
             items.map((it: any) => ({ position: it.position, productId: it.productId }))
           );
+          const initial: Record<number, string> = {};
+          items.forEach((it: any) => {
+            if (it.overrideImageUrl) initial[it.position] = it.overrideImageUrl;
+          });
+          setImageOverrides(initial);
         }
+      }
+      if (overRes.ok) {
+        const json = await overRes.json();
+        const map = (json?.value || {}) as Record<string, string>;
+        const initial: Record<number, string> = {};
+        Object.entries(map).forEach(([k, v]) => { initial[Number(k)] = String(v); });
+        setImageOverrides(initial);
       }
     })();
   }, []);
@@ -74,6 +88,11 @@ export default function HomeManagement() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ positions: featured }),
+      });
+      await fetch('/api/settings/featuredImageOverrides', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: imageOverrides }),
       });
       alert('Accueil mis à jour.');
     } catch (e) {
@@ -110,6 +129,25 @@ export default function HomeManagement() {
               >
                 Sélectionner un produit
               </button>
+              <div className="mt-3">
+                <label className="block text-sm text-gray-700 mb-1">Image personnalisée (opsiyonel)</label>
+                <input type="file" accept="image/*" onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                  if (res.ok) {
+                    const json = await res.json();
+                    setImageOverrides((prev) => ({ ...prev, [position]: json.url }));
+                  } else {
+                    alert('Téléversement échoué');
+                  }
+                }} className="w-full text-sm" />
+                {imageOverrides[position] && (
+                  <img src={imageOverrides[position]} alt="override" className="h-20 mt-2 rounded" />
+                )}
+              </div>
             </div>
           ))}
         </div>

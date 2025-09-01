@@ -2,11 +2,19 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 export async function GET() {
-  const items = await prisma.featuredProduct.findMany({
-    orderBy: { position: 'asc' },
-    include: { product: true },
-  });
-  return NextResponse.json(items);
+  const [items, overridesSetting] = await Promise.all([
+    prisma.featuredProduct.findMany({
+      orderBy: { position: 'asc' },
+      include: { product: true },
+    }),
+    prisma.setting.findUnique({ where: { key: 'featuredImageOverrides' } }).catch(() => null),
+  ]);
+  const overrides: Record<string, string> = (overridesSetting?.value as any) || {};
+  const withOverrides = items.map((it: any) => ({
+    ...it,
+    overrideImageUrl: overrides[String(it.position)] || null,
+  }));
+  return NextResponse.json(withOverrides);
 }
 
 export async function PUT(request: NextRequest) {
@@ -21,8 +29,16 @@ export async function PUT(request: NextRequest) {
       prisma.featuredProduct.create({ data: { position: p.position, productId: p.productId } })
     ),
   ]);
-  const items = await prisma.featuredProduct.findMany({ orderBy: { position: 'asc' }, include: { product: true } });
-  return NextResponse.json(items);
+  const [items, overridesSetting] = await Promise.all([
+    prisma.featuredProduct.findMany({ orderBy: { position: 'asc' }, include: { product: true } }),
+    prisma.setting.findUnique({ where: { key: 'featuredImageOverrides' } }).catch(() => null),
+  ]);
+  const overrides: Record<string, string> = (overridesSetting?.value as any) || {};
+  const withOverrides = items.map((it: any) => ({
+    ...it,
+    overrideImageUrl: overrides[String(it.position)] || null,
+  }));
+  return NextResponse.json(withOverrides);
 }
 
 

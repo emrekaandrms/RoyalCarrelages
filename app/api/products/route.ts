@@ -15,19 +15,36 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '24', 10);
     const q = (searchParams.get('q') || '').trim();
+    const name = (searchParams.get('name') || '').trim();
+    const size = (searchParams.get('size') || '').trim();
     
     const skip = (page - 1) * limit;
     
-    const where = q
-      ? {
-          OR: [
-            { koleksiyonu: { contains: q, mode: 'insensitive' } },
-            { renk: { contains: q, mode: 'insensitive' } },
-            { olcusu: { contains: q, mode: 'insensitive' } },
-            { slug: { contains: q, mode: 'insensitive' } },
-          ],
-        }
-      : undefined;
+    const andConds: any[] = [];
+    if (q) {
+      andConds.push({
+        OR: [
+          { koleksiyonu: { contains: q, mode: 'insensitive' } },
+          { renk: { contains: q, mode: 'insensitive' } },
+          { olcusu: { contains: q, mode: 'insensitive' } },
+          { slug: { contains: q, mode: 'insensitive' } },
+        ],
+      });
+    }
+    if (name) {
+      andConds.push({
+        OR: [
+          { koleksiyonu: { contains: name, mode: 'insensitive' } },
+          { slug: { contains: name, mode: 'insensitive' } },
+          { renk: { contains: name, mode: 'insensitive' } },
+        ],
+      });
+    }
+    if (size) {
+      andConds.push({ olcusu: { contains: size, mode: 'insensitive' } });
+    }
+
+    const where = andConds.length ? { AND: andConds } : undefined;
 
     const [products, totalCount] = await Promise.all([
       prisma.product.findMany({
