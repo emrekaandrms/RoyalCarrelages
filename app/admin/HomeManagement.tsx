@@ -23,17 +23,19 @@ export default function HomeManagement() {
   );
   const [saving, setSaving] = useState(false);
   const [imageOverrides, setImageOverrides] = useState<Record<number, string>>({});
+  const [titleOverrides, setTitleOverrides] = useState<Record<number, string>>({});
 
   useEffect(() => {
     (async () => {
       const qs = new URLSearchParams();
       if (filterName) qs.set('name', filterName);
       if (filterSize) qs.set('size', filterSize);
-      const [prodsRes, heroRes, featRes, overRes] = await Promise.all([
+      const [prodsRes, heroRes, featRes, overRes, titleRes] = await Promise.all([
         fetch(`/api/products?limit=200&${qs.toString()}`),
         fetch('/api/settings/heroImageUrl'),
         fetch('/api/featured'),
         fetch('/api/settings/featuredImageOverrides'),
+        fetch('/api/settings/featuredTitleOverrides'),
       ]);
       if (prodsRes.ok) {
         const json = await prodsRes.json();
@@ -63,6 +65,13 @@ export default function HomeManagement() {
         const initial: Record<number, string> = {};
         Object.entries(map).forEach(([k, v]) => { initial[Number(k)] = String(v); });
         setImageOverrides(initial);
+      }
+      if (titleRes.ok) {
+        const json = await titleRes.json();
+        const map = (json?.value || {}) as Record<string, string>;
+        const initial: Record<number, string> = {};
+        Object.entries(map).forEach(([k, v]) => { initial[Number(k)] = String(v); });
+        setTitleOverrides(initial);
       }
     })();
   }, []);
@@ -98,6 +107,11 @@ export default function HomeManagement() {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ value: imageOverrides }),
+      });
+      await fetch('/api/settings/featuredTitleOverrides', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ value: titleOverrides }),
       });
       alert('Accueil mis à jour.');
     } catch (e) {
@@ -152,6 +166,16 @@ export default function HomeManagement() {
                 {imageOverrides[position] && (
                   <img src={imageOverrides[position]} alt="override" className="h-20 mt-2 rounded" />
                 )}
+              </div>
+              <div className="mt-3">
+                <label className="block text-sm text-gray-700 mb-1">Titre personnalisé (opsiyonel)</label>
+                <input
+                  type="text"
+                  value={titleOverrides[position] || ''}
+                  onChange={(e) => setTitleOverrides((prev) => ({ ...prev, [position]: e.target.value }))}
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Titre alternatif"
+                />
               </div>
             </div>
           ))}

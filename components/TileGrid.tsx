@@ -20,7 +20,9 @@ export default function TileGrid() {
             items.map((it: any) => ({
               slug: it.product.slug,
               image: it.overrideImageUrl ? it.overrideImageUrl : `/${it.product.imagePath}`,
-              name: `${it.product.koleksiyonu} ${it.product.renk} ${it.product.olcusu}`,
+              name: it.overrideTitle && String(it.overrideTitle).trim().length
+                ? String(it.overrideTitle)
+                : `${it.product.koleksiyonu} ${it.product.renk} ${it.product.olcusu}`,
             }))
           );
         }

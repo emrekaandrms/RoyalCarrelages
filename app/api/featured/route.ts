@@ -2,17 +2,20 @@ import { NextRequest, NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
 export async function GET() {
-  const [items, overridesSetting] = await Promise.all([
+  const [items, overridesSetting, titleOverridesSetting] = await Promise.all([
     prisma.featuredProduct.findMany({
       orderBy: { position: 'asc' },
       include: { product: true },
     }),
     prisma.setting.findUnique({ where: { key: 'featuredImageOverrides' } }).catch(() => null),
+    prisma.setting.findUnique({ where: { key: 'featuredTitleOverrides' } }).catch(() => null),
   ]);
   const overrides: Record<string, string> = (overridesSetting?.value as any) || {};
+  const titleOverrides: Record<string, string> = (titleOverridesSetting?.value as any) || {};
   const withOverrides = items.map((it: any) => ({
     ...it,
     overrideImageUrl: overrides[String(it.position)] || null,
+    overrideTitle: titleOverrides[String(it.position)] || null,
   }));
   return NextResponse.json(withOverrides);
 }
@@ -29,14 +32,17 @@ export async function PUT(request: NextRequest) {
       prisma.featuredProduct.create({ data: { position: p.position, productId: p.productId } })
     ),
   ]);
-  const [items, overridesSetting] = await Promise.all([
+  const [items, overridesSetting, titleOverridesSetting] = await Promise.all([
     prisma.featuredProduct.findMany({ orderBy: { position: 'asc' }, include: { product: true } }),
     prisma.setting.findUnique({ where: { key: 'featuredImageOverrides' } }).catch(() => null),
+    prisma.setting.findUnique({ where: { key: 'featuredTitleOverrides' } }).catch(() => null),
   ]);
   const overrides: Record<string, string> = (overridesSetting?.value as any) || {};
+  const titleOverrides: Record<string, string> = (titleOverridesSetting?.value as any) || {};
   const withOverrides = items.map((it: any) => ({
     ...it,
     overrideImageUrl: overrides[String(it.position)] || null,
+    overrideTitle: titleOverrides[String(it.position)] || null,
   }));
   return NextResponse.json(withOverrides);
 }
