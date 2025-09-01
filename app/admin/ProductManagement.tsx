@@ -30,6 +30,9 @@ export default function ProductManagement() {
   const [totalPages, setTotalPages] = useState(1);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [filterName, setFilterName] = useState('');
+  const [filterSize, setFilterSize] = useState('');
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     koleksiyonu: '',
     olcusu: '',
@@ -45,7 +48,12 @@ export default function ProductManagement() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/products?page=${page}&limit=${limit}`);
+      const params = new URLSearchParams();
+      params.set('page', String(page));
+      params.set('limit', String(limit));
+      if (filterName) params.set('name', filterName);
+      if (filterSize) params.set('size', filterSize);
+      const response = await fetch(`/api/products?${params.toString()}`);
       const data = await response.json();
       setProducts(data.products || []);
       setTotalPages(data.totalPages || 1);
@@ -58,7 +66,7 @@ export default function ProductManagement() {
 
   useEffect(() => {
     fetchProducts();
-  }, [page, limit]);
+  }, [page, limit, filterName, filterSize]);
 
   // Fonction de création de slug
   const createSlug = (koleksiyon: string, olcu: string, renk: string) => {
@@ -344,6 +352,7 @@ export default function ProductManagement() {
         <table className="w-full">
           <thead>
             <tr className="border-b border-gray-200">
+              <th className="text-left py-3 px-4 font-medium text-gray-700">Image</th>
               <th className="text-left py-3 px-4 font-medium text-gray-700">Collection</th>
               <th className="text-left py-3 px-4 font-medium text-gray-700">Taille</th>
               <th className="text-left py-3 px-4 font-medium text-gray-700">Couleur</th>
@@ -351,10 +360,47 @@ export default function ProductManagement() {
               <th className="text-left py-3 px-4 font-medium text-gray-700">Slug</th>
               <th className="text-left py-3 px-4 font-medium text-gray-700">Actions</th>
             </tr>
+            <tr className="border-b border-gray-100">
+              <th className="py-2 px-4"></th>
+              <th className="py-2 px-4">
+                <input
+                  type="text"
+                  value={filterName}
+                  onChange={(e) => { setFilterName(e.target.value); setPage(1); }}
+                  placeholder="Nom / slug / couleur"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                />
+              </th>
+              <th className="py-2 px-4">
+                <input
+                  type="text"
+                  value={filterSize}
+                  onChange={(e) => { setFilterSize(e.target.value); setPage(1); }}
+                  placeholder="Taille (ex: 60x120)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                />
+              </th>
+              <th className="py-2 px-4"></th>
+              <th className="py-2 px-4"></th>
+              <th className="py-2 px-4"></th>
+              <th className="py-2 px-4 text-right">
+                <div className="flex justify-end space-x-2">
+                  <button onClick={() => { setFilterName(''); setFilterSize(''); setPage(1); }} className="px-3 py-1 border rounded text-sm">Réinitialiser</button>
+                </div>
+              </th>
+            </tr>
           </thead>
           <tbody>
             {products.map((product) => (
               <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50">
+                <td className="py-4 px-4">
+                  <img
+                    src={`/${product.imagePath}`}
+                    alt={product.koleksiyonu}
+                    className="w-12 h-12 object-cover rounded cursor-pointer"
+                    onClick={() => setImagePreview(`/${product.imagePath}`)}
+                  />
+                </td>
                 <td className="py-4 px-4">
                   <div className="font-medium text-gray-800">{product.koleksiyonu}</div>
                 </td>
@@ -384,6 +430,16 @@ export default function ProductManagement() {
             ))}
           </tbody>
         </table>
+        {imagePreview && (
+          <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center" onClick={() => setImagePreview(null)}>
+            <div className="bg-white rounded shadow-lg p-2" onClick={(e) => e.stopPropagation()}>
+              <img src={imagePreview} alt="preview" className="max-h-[80vh] max-w-[90vw] object-contain" />
+              <div className="text-right mt-2">
+                <button onClick={() => setImagePreview(null)} className="px-3 py-1 border rounded text-sm">Fermer</button>
+              </div>
+            </div>
+          </div>
+        )}
         <div className="flex items-center justify-between mt-4">
           <div className="text-sm text-gray-500">Page {page} / {totalPages}</div>
           <div className="space-x-2">
