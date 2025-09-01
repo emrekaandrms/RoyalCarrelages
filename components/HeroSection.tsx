@@ -6,16 +6,18 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 export default function HeroSection() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [heroUrl, setHeroUrl] = useState<string | null>(null);
   const [slides, setSlides] = useState<Array<{ imageUrl: string; title: string; subtitle?: string; link?: string; buttonText?: string }>>([]);
+  const [cmsHero, setCmsHero] = useState<{ title?: string; subtitle?: string; description?: string; exploreBtn?: string; consultBtn?: string } | null>(null);
 
   useEffect(() => {
     (async () => {
       try {
-        const [sres, hres] = await Promise.all([
+        const [sres, hres, cms] = await Promise.all([
           fetch('/api/banners', { cache: 'no-store' }),
-          fetch('/api/settings/heroImageUrl', { cache: 'no-store' })
+          fetch('/api/settings/heroImageUrl', { cache: 'no-store' }),
+          fetch(`/api/settings/cms.hero.${language}`, { cache: 'no-store' })
         ]);
         if (sres.ok) {
           const all = await sres.json();
@@ -26,11 +28,15 @@ export default function HeroSection() {
           const json = await hres.json();
           setHeroUrl(json.value || null);
         }
+        if (cms.ok) {
+          const json = await cms.json();
+          setCmsHero(json.value || null);
+        }
       } catch {
         // ignore network errors
       }
     })();
-  }, []);
+  }, [language]);
 
   return (
     <section className="relative h-screen">
@@ -53,19 +59,19 @@ export default function HeroSection() {
         <div className="w-full max-w-7xl mx-auto px-8">
           <div className="max-w-2xl">
             <h1 className="text-5xl md:text-6xl font-light text-white mb-6 leading-tight">
-              {t.hero.title}
+              {cmsHero?.title || t.hero.title}
               <br />
-              <span className="text-4xl md:text-5xl">{t.hero.subtitle}</span>
+              <span className="text-4xl md:text-5xl">{cmsHero?.subtitle || t.hero.subtitle}</span>
             </h1>
             <p className="text-xl text-gray-200 mb-8 leading-relaxed">
-              {t.hero.description}
+              {cmsHero?.description || t.hero.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link href="/carrelages" className="bg-white text-gray-800 px-8 py-4 hover:bg-gray-100 transition-colors cursor-pointer whitespace-nowrap font-medium">
-                {t.hero.exploreBtn}
+                {cmsHero?.exploreBtn || t.hero.exploreBtn}
               </Link>
               <Link href="/contact" className="border-2 border-white text-white px-8 py-4 hover:bg-white hover:text-gray-800 transition-colors cursor-pointer whitespace-nowrap font-medium">
-                {t.hero.consultBtn}
+                {cmsHero?.consultBtn || t.hero.consultBtn}
               </Link>
             </div>
           </div>

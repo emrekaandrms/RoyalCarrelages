@@ -4,10 +4,11 @@
 import { useLanguage } from '@/lib/language-context';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ProfessionalsPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [cms, setCms] = useState<{ title?: string; description?: string } | null>(null);
   const [formData, setFormData] = useState({
     company: '',
     contact: '',
@@ -18,6 +19,19 @@ export default function ProfessionalsPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`/api/settings/cms.professionals.${language}`, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          setCms(json.value || null);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+  }, [language]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -80,10 +94,10 @@ export default function ProfessionalsPage() {
             <div className="w-full max-w-7xl mx-auto px-8">
               <div className="max-w-3xl">
                 <h1 className="text-4xl md:text-5xl font-light text-white mb-4">
-                  Espace Professionnels
+                  {cms?.title || 'Espace Professionnels'}
                 </h1>
                 <p className="text-xl text-gray-200 leading-relaxed">
-                  Des services dédiés aux architectes, décorateurs, entreprises du bâtiment et revendeurs pour accompagner vos projets.
+                  {cms?.description || `Des services dédiés aux architectes, décorateurs, entreprises du bâtiment et revendeurs pour accompagner vos projets.`}
                 </p>
               </div>
             </div>

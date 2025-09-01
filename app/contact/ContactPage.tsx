@@ -4,10 +4,11 @@
 import { useLanguage } from '@/lib/language-context';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function ContactPage() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [cms, setCms] = useState<{ title?: string; description?: string; addressLines?: string[]; phone?: string; email?: string; hoursLines?: string[]; showroomTitle?: string } | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -16,6 +17,20 @@ export default function ContactPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`/api/settings/cms.contact.${language}`, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          setCms(json.value || null);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+  }, [language]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,10 +67,10 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-5xl font-light text-gray-800 mb-4">
-              Contactez-nous
+              {cms?.title || 'Contactez-nous'}
             </h1>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Notre équipe d'experts est là pour vous accompagner dans tous vos projets. N'hésitez pas à nous contacter pour une consultation personnalisée.
+              {cms?.description || `Notre équipe d'experts est là pour vous accompagner dans tous vos projets. N'hésitez pas à nous contacter pour une consultation personnalisée.`}
             </p>
           </div>
 
@@ -71,8 +86,11 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-medium text-gray-800 mb-1">Adresse</h3>
                     <p className="text-gray-600">
-                      123 Rue de la Céramique<br />
-                      75001 Paris, France
+                      {(cms?.addressLines && cms.addressLines.length ? cms.addressLines : ['123 Rue de la Céramique', '75001 Paris, France']).map((l, i) => (
+                        <span key={i}>
+                          {l}{i === (cms?.addressLines?.length || 2) - 1 ? '' : <br />}
+                        </span>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -83,7 +101,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800 mb-1">Téléphone</h3>
-                    <p className="text-gray-600">+33 1 23 45 67 89</p>
+                    <p className="text-gray-600">{cms?.phone || '+33 1 23 45 67 89'}</p>
                   </div>
                 </div>
 
@@ -93,7 +111,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800 mb-1">Email</h3>
-                    <p className="text-gray-600">contact@ceramiquedesign.fr</p>
+                    <p className="text-gray-600">{cms?.email || 'contact@ceramiquedesign.fr'}</p>
                   </div>
                 </div>
 
@@ -104,8 +122,11 @@ export default function ContactPage() {
                   <div>
                     <h3 className="font-medium text-gray-800 mb-1">Horaires</h3>
                     <p className="text-gray-600">
-                      Lun - Ven: 9h00 - 18h00<br />
-                      Sam: 10h00 - 16h00
+                      {(cms?.hoursLines && cms.hoursLines.length ? cms.hoursLines : ['Lun - Ven: 9h00 - 18h00', 'Sam: 10h00 - 16h00']).map((l, i) => (
+                        <span key={i}>
+                          {l}{i === (cms?.hoursLines?.length || 2) - 1 ? '' : <br />}
+                        </span>
+                      ))}
                     </p>
                   </div>
                 </div>
@@ -233,7 +254,7 @@ export default function ContactPage() {
           </div>
 
           <div className="mt-16">
-            <h2 className="text-2xl font-light text-gray-800 mb-8 text-center">Notre Showroom</h2>
+            <h2 className="text-2xl font-light text-gray-800 mb-8 text-center">{cms?.showroomTitle || 'Notre Showroom'}</h2>
             <div className="rounded-lg overflow-hidden shadow-lg">
               <iframe
                 src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2624.991441827!2d2.3422222160934!3d48.858372679287544!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zNDjCsDUxJzMwLjEiTiAywrAyMCczMi4wIkU!5e0!3m2!1sen!2sfr!4v1639740000000!5m2!1sen!2sfr"

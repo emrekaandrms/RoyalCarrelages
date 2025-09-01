@@ -2,10 +2,26 @@
 
 import Link from 'next/link';
 import { useLanguage } from '@/lib/language-context';
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 
 export default function Footer() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const [cmsFooter, setCmsFooter] = useState<{ description?: string; addressLines?: string[]; phone?: string; email?: string; companyName?: string } | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch(`/api/settings/cms.footer.${language}`, { cache: 'no-store' });
+        if (res.ok) {
+          const json = await res.json();
+          setCmsFooter(json.value || null);
+        }
+      } catch {
+        // ignore
+      }
+    })();
+  }, [language]);
 
   return (
     <footer className="bg-gray-800 text-white py-16">
@@ -23,7 +39,7 @@ export default function Footer() {
               />
             </div>
             <p className="text-gray-300 leading-relaxed">
-              {t.footer.description}
+              {cmsFooter?.description || t.footer.description}
             </p>
           </div>
 
@@ -46,17 +62,18 @@ export default function Footer() {
           <div>
             <h4 className="text-lg font-medium mb-4">{t.footer.contact}</h4>
             <ul className="space-y-2 text-gray-300">
-              <li>1234 Design Street</li>
-              <li>New York, NY 10001</li>
-              <li>+1 (555) 123-4567</li>
-              <li>hello@tilebrand.com</li>
+              {(cmsFooter?.addressLines && cmsFooter.addressLines.length ? cmsFooter.addressLines : ['1234 Design Street', 'New York, NY 10001']).map((line, i) => (
+                <li key={i}>{line}</li>
+              ))}
+              <li>{cmsFooter?.phone || '+1 (555) 123-4567'}</li>
+              <li>{cmsFooter?.email || 'hello@tilebrand.com'}</li>
             </ul>
           </div>
         </div>
 
         <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
           <p className="text-gray-400 text-sm">
-            © 2024 Tile Brand. {t.footer.rights}
+            © 2024 {cmsFooter?.companyName || 'Tile Brand'}. {t.footer.rights}
           </p>
           <div className="flex space-x-6 mt-4 md:mt-0">
             {/* Gizlilik/şartlar sayfaları yoksa devre dışı bıraktık */}

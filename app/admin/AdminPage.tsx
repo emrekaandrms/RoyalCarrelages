@@ -72,7 +72,8 @@ export default function AdminPage() {
   const tabs = [
     { id: 'products', name: 'Produits', icon: 'ri-shopping-bag-line' },
     { id: 'banners', name: 'Bannières', icon: 'ri-image-line' },
-    { id: 'features', name: 'Features', icon: 'ri-flashlight-line' }
+    { id: 'features', name: 'Features', icon: 'ri-flashlight-line' },
+    { id: 'settings', name: 'Paramètres', icon: 'ri-settings-3-line' }
   ];
 
   return (
@@ -106,6 +107,7 @@ export default function AdminPage() {
             {activeTab === 'products' && <ProductManagement />}
             {activeTab === 'banners' && <BannerManagement />}
             {activeTab === 'features' && <FeaturesManagement />}
+            {activeTab === 'settings' && <SettingsManagement />}
           </div>
         </div>
       </div>
