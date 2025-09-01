@@ -41,6 +41,17 @@ interface CMSProfessionals {
   description: string;
 }
 
+interface CMSProfessionalsB2B {
+  contactTitle: string;
+  contactDescription: string;
+  emailLabel: string;
+  email: string;
+  phoneLabel: string;
+  phone: string;
+  hoursLabel: string;
+  hours: string;
+}
+
 const DEFAULTS: SettingsPayload = {
   heroImageUrl: '',
   featuredSlugs: ['', '', '', '', '', ''],
@@ -84,6 +95,10 @@ export default function SettingsManagement() {
     fr: { title: '', description: '' },
     en: { title: '', description: '' },
   });
+  const [professionalsB2B, setProfessionalsB2B] = useState<Record<Language, CMSProfessionalsB2B>>({
+    fr: { contactTitle: '', contactDescription: '', emailLabel: 'Email:', email: '', phoneLabel: 'Téléphone:', phone: '', hoursLabel: 'Horaires:', hours: '' },
+    en: { contactTitle: '', contactDescription: '', emailLabel: 'Email:', email: '', phoneLabel: 'Phone:', phone: '', hoursLabel: 'Hours:', hours: '' },
+  });
 
   useEffect(() => {
     (async () => {
@@ -106,6 +121,10 @@ export default function SettingsManagement() {
       const [proFr, proEn] = await Promise.all([
         fetchSetting<CMSProfessionals>('cms.professionals.fr'),
         fetchSetting<CMSProfessionals>('cms.professionals.en'),
+      ]);
+      const [proB2BFr, proB2BEn] = await Promise.all([
+        fetchSetting<CMSProfessionalsB2B>('cms.professionals.b2b.fr'),
+        fetchSetting<CMSProfessionalsB2B>('cms.professionals.b2b.en'),
       ]);
 
       // Fallbacks to current site content so the admin sees existing texts
@@ -158,6 +177,26 @@ export default function SettingsManagement() {
         // If you want different EN defaults, edit here; mirroring FR for now
         ...proFallbackFr,
       };
+      const proB2BFallbackFr: CMSProfessionalsB2B = {
+        contactTitle: 'Contact Dédié',
+        contactDescription: `Notre équipe commerciale B2B est à votre disposition pour étudier vos besoins spécifiques.`,
+        emailLabel: 'Email:',
+        email: 'pro@ceramiquedesign.fr',
+        phoneLabel: 'Téléphone:',
+        phone: '+33 1 23 45 67 88',
+        hoursLabel: 'Horaires:',
+        hours: 'Lun-Ven 8h-19h',
+      };
+      const proB2BFallbackEn: CMSProfessionalsB2B = {
+        contactTitle: 'Dedicated Contact',
+        contactDescription: `Our B2B sales team is available to understand your specific needs.`,
+        emailLabel: 'Email:',
+        email: 'pro@ceramiquedesign.fr',
+        phoneLabel: 'Phone:',
+        phone: '+33 1 23 45 67 88',
+        hoursLabel: 'Hours:',
+        hours: 'Mon-Fri 8am-7pm',
+      };
 
       setSettings({ heroImageUrl, featuredSlugs });
       setHeroCMS((prev) => ({
@@ -175,6 +214,10 @@ export default function SettingsManagement() {
       setProfessionalsCMS((prev) => ({
         fr: proFr ?? proFallbackFr,
         en: proEn ?? proFallbackEn,
+      }));
+      setProfessionalsB2B((prev) => ({
+        fr: proB2BFr ?? proB2BFallbackFr,
+        en: proB2BEn ?? proB2BFallbackEn,
       }));
       setLoading(false);
     })();
@@ -225,6 +268,8 @@ export default function SettingsManagement() {
       await saveSetting('cms.contact.en', contactCMS.en);
       await saveSetting('cms.professionals.fr', professionalsCMS.fr);
       await saveSetting('cms.professionals.en', professionalsCMS.en);
+      await saveSetting('cms.professionals.b2b.fr', professionalsB2B.fr);
+      await saveSetting('cms.professionals.b2b.en', professionalsB2B.en);
       alert('Paramètres enregistrés.');
     } catch (e) {
       alert('Erreur lors de la sauvegarde.');
@@ -545,6 +590,83 @@ export default function SettingsManagement() {
           <div className="border rounded-lg p-4 bg-white">
             <div className="text-2xl font-light text-gray-800">{professionalsCMS[activeLang].title || 'Espace Professionnels'}</div>
             <div className="text-gray-600">{professionalsCMS[activeLang].description || 'Description'}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <h3 className="text-lg font-medium text-gray-800 mb-4">Professionnels - Contact B2B ({activeLang.toUpperCase()})</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].contactTitle}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], contactTitle: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Titre bloc (ex: Contact Dédié)"
+          />
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].contactDescription}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], contactDescription: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Description"
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].emailLabel}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], emailLabel: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Label Email"
+          />
+          <input
+            type="email"
+            value={professionalsB2B[activeLang].email}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], email: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Email"
+          />
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].phoneLabel}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], phoneLabel: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Label Téléphone"
+          />
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].phone}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], phone: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Téléphone"
+          />
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].hoursLabel}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], hoursLabel: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Label Horaires"
+          />
+          <input
+            type="text"
+            value={professionalsB2B[activeLang].hours}
+            onChange={(e) => setProfessionalsB2B((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], hours: e.target.value } }))}
+            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+            placeholder="Horaires"
+          />
+        </div>
+
+        <div className="mt-6">
+          <div className="text-sm text-gray-600 mb-2">Aperçu</div>
+          <div className="bg-gray-50 rounded-lg p-6">
+            <div className="text-2xl font-light text-gray-800 mb-4">{professionalsB2B[activeLang].contactTitle || 'Contact'}</div>
+            <div className="text-gray-600 mb-4">{professionalsB2B[activeLang].contactDescription || 'Description'}</div>
+            <div className="space-y-2 text-gray-700">
+              <div><strong>{professionalsB2B[activeLang].emailLabel || 'Email:'}</strong> {professionalsB2B[activeLang].email || 'example@domain.com'}</div>
+              <div><strong>{professionalsB2B[activeLang].phoneLabel || 'Téléphone:'}</strong> {professionalsB2B[activeLang].phone || '+33 ...'}</div>
+              <div><strong>{professionalsB2B[activeLang].hoursLabel || 'Horaires:'}</strong> {professionalsB2B[activeLang].hours || 'Lun-Ven ...'}</div>
+            </div>
           </div>
         </div>
       </div>

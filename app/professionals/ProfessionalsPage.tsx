@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 export default function ProfessionalsPage() {
   const { t, language } = useLanguage();
   const [cms, setCms] = useState<{ title?: string; description?: string } | null>(null);
+  const [b2b, setB2b] = useState<{ contactTitle?: string; contactDescription?: string; emailLabel?: string; email?: string; phoneLabel?: string; phone?: string; hoursLabel?: string; hours?: string } | null>(null);
   const [formData, setFormData] = useState({
     company: '',
     contact: '',
@@ -26,6 +27,11 @@ export default function ProfessionalsPage() {
         if (res.ok) {
           const json = await res.json();
           setCms(json.value || null);
+        }
+        const b2bres = await fetch(`/api/settings/cms.professionals.b2b.${language}`, { cache: 'no-store' });
+        if (b2bres.ok) {
+          const json = await b2bres.json();
+          setB2b(json.value || null);
         }
       } catch {
         // ignore
@@ -169,14 +175,14 @@ export default function ProfessionalsPage() {
               </div>
 
               <div className="mt-12 p-6 bg-gray-50 rounded-lg">
-                <h3 className="text-xl font-medium text-gray-800 mb-4">Contact Dédié</h3>
+                <h3 className="text-xl font-medium text-gray-800 mb-4">{b2b?.contactTitle || 'Contact Dédié'}</h3>
                 <p className="text-gray-600 mb-4">
-                  Notre équipe commerciale B2B est à votre disposition pour étudier vos besoins spécifiques.
+                  {b2b?.contactDescription || 'Notre équipe commerciale B2B est à votre disposition pour étudier vos besoins spécifiques.'}
                 </p>
                 <div className="space-y-2 text-gray-600">
-                  <p><strong>Email:</strong> pro@ceramiquedesign.fr</p>
-                  <p><strong>Téléphone:</strong> +33 1 23 45 67 88</p>
-                  <p><strong>Horaires:</strong> Lun-Ven 8h-19h</p>
+                  <p><strong>{b2b?.emailLabel || 'Email:'}</strong> {b2b?.email || 'pro@ceramiquedesign.fr'}</p>
+                  <p><strong>{b2b?.phoneLabel || 'Téléphone:'}</strong> {b2b?.phone || '+33 1 23 45 67 88'}</p>
+                  <p><strong>{b2b?.hoursLabel || 'Horaires:'}</strong> {b2b?.hours || 'Lun-Ven 8h-19h'}</p>
                 </div>
               </div>
             </div>
