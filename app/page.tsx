@@ -1,5 +1,5 @@
 
-'use client';
+// server component (no 'use client') so we can export metadata
 
 import Header from '@/components/Header';
 import HeroSection from '@/components/HeroSection';
