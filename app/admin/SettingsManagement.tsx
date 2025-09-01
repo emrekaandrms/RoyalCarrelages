@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { translations } from '@/lib/translations';
 
 type Language = 'fr' | 'en';
 
@@ -107,22 +108,73 @@ export default function SettingsManagement() {
         fetchSetting<CMSProfessionals>('cms.professionals.en'),
       ]);
 
+      // Fallbacks to current site content so the admin sees existing texts
+      const heroFallbackFr: CMSHero = {
+        title: translations.fr.hero.title,
+        subtitle: translations.fr.hero.subtitle,
+        description: translations.fr.hero.description,
+        exploreBtn: translations.fr.hero.exploreBtn,
+        consultBtn: translations.fr.hero.consultBtn,
+      };
+      const heroFallbackEn: CMSHero = {
+        title: translations.en.hero.title,
+        subtitle: translations.en.hero.subtitle,
+        description: translations.en.hero.description,
+        exploreBtn: translations.en.hero.exploreBtn,
+        consultBtn: translations.en.hero.consultBtn,
+      };
+      const footerFallbackFr: CMSFooter = {
+        description: translations.fr.footer.description,
+        addressLines: ['1234 Design Street', 'New York, NY 10001'],
+        phone: '+1 (555) 123-4567',
+        email: 'hello@tilebrand.com',
+        companyName: 'Royal Carrelages',
+      };
+      const footerFallbackEn: CMSFooter = {
+        description: translations.en.footer.description,
+        addressLines: ['1234 Design Street', 'New York, NY 10001'],
+        phone: '+1 (555) 123-4567',
+        email: 'hello@tilebrand.com',
+        companyName: 'Royal Carrelages',
+      };
+      const contactFallbackFr: CMSContact = {
+        title: 'Contactez-nous',
+        description: `Notre équipe d'experts est là pour vous accompagner dans tous vos projets. N'hésitez pas à nous contacter pour une consultation personnalisée.`,
+        addressLines: ['123 Rue de la Céramique', '75001 Paris, France'],
+        phone: '+33 1 23 45 67 89',
+        email: 'contact@ceramiquedesign.fr',
+        hoursLines: ['Lun - Ven: 9h00 - 18h00', 'Sam: 10h00 - 16h00'],
+        showroomTitle: 'Notre Showroom',
+      };
+      const contactFallbackEn: CMSContact = {
+        // If you want different EN defaults, edit here; mirroring FR for now
+        ...contactFallbackFr,
+      };
+      const proFallbackFr: CMSProfessionals = {
+        title: 'Espace Professionnels',
+        description: `Des services dédiés aux architectes, décorateurs, entreprises du bâtiment et revendeurs pour accompagner vos projets.`,
+      };
+      const proFallbackEn: CMSProfessionals = {
+        // If you want different EN defaults, edit here; mirroring FR for now
+        ...proFallbackFr,
+      };
+
       setSettings({ heroImageUrl, featuredSlugs });
       setHeroCMS((prev) => ({
-        fr: heroFr ?? prev.fr,
-        en: heroEn ?? prev.en,
+        fr: heroFr ?? heroFallbackFr,
+        en: heroEn ?? heroFallbackEn,
       }));
       setFooterCMS((prev) => ({
-        fr: sanitizeFooter(footerFr) ?? prev.fr,
-        en: sanitizeFooter(footerEn) ?? prev.en,
+        fr: sanitizeFooter(footerFr) ?? footerFallbackFr,
+        en: sanitizeFooter(footerEn) ?? footerFallbackEn,
       }));
       setContactCMS((prev) => ({
-        fr: sanitizeContact(contactFr) ?? prev.fr,
-        en: sanitizeContact(contactEn) ?? prev.en,
+        fr: sanitizeContact(contactFr) ?? contactFallbackFr,
+        en: sanitizeContact(contactEn) ?? contactFallbackEn,
       }));
       setProfessionalsCMS((prev) => ({
-        fr: proFr ?? prev.fr,
-        en: proEn ?? prev.en,
+        fr: proFr ?? proFallbackFr,
+        en: proEn ?? proFallbackEn,
       }));
       setLoading(false);
     })();
@@ -237,20 +289,55 @@ export default function SettingsManagement() {
           placeholder="Description"
         />
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-          <input
-            type="text"
-            value={heroCMS[activeLang].exploreBtn}
-            onChange={(e) => setHeroCMS((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], exploreBtn: e.target.value } }))}
-            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
-            placeholder="Texte bouton Explorer"
-          />
-          <input
-            type="text"
-            value={heroCMS[activeLang].consultBtn}
-            onChange={(e) => setHeroCMS((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], consultBtn: e.target.value } }))}
-            className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
-            placeholder="Texte bouton Consultation"
-          />
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={heroCMS[activeLang].exploreBtn}
+              onChange={(e) => setHeroCMS((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], exploreBtn: e.target.value } }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+              placeholder="Texte bouton Explorer"
+            />
+            <button className="bg-white text-gray-800 px-4 py-2 border rounded shadow-sm">
+              {heroCMS[activeLang].exploreBtn || 'Explorer'}
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <input
+              type="text"
+              value={heroCMS[activeLang].consultBtn}
+              onChange={(e) => setHeroCMS((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], consultBtn: e.target.value } }))}
+              className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+              placeholder="Texte bouton Consultation"
+            />
+            <button className="border-2 border-gray-800 text-gray-800 px-4 py-2 rounded">
+              {heroCMS[activeLang].consultBtn || 'Consultation'}
+            </button>
+          </div>
+        </div>
+
+        <div className="mt-6">
+          <div className="text-sm text-gray-600 mb-2">Aperçu</div>
+          <div
+            className="relative rounded-lg overflow-hidden h-48 bg-cover bg-center"
+            style={{
+              backgroundImage: `linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('${settings.heroImageUrl || 'https://readdy.ai/api/search-image?query=modern%20interior&width=1200&height=600'}')`
+            }}
+          >
+            <div className="absolute inset-0 flex items-center">
+              <div className="px-6">
+                <div className="text-white text-2xl font-light">{heroCMS[activeLang].title || 'Titre'}</div>
+                <div className="text-white/90">{heroCMS[activeLang].subtitle || 'Sous-titre'}</div>
+                <div className="mt-3 flex gap-3">
+                  <button className="bg-white text-gray-800 px-4 py-2 rounded">
+                    {heroCMS[activeLang].exploreBtn || 'Explorer'}
+                  </button>
+                  <button className="border-2 border-white text-white px-4 py-2 rounded">
+                    {heroCMS[activeLang].consultBtn || 'Consultation'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -320,6 +407,21 @@ export default function SettingsManagement() {
               className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
               placeholder="Email"
             />
+          </div>
+
+          <div className="mt-6">
+            <div className="text-sm text-gray-600 mb-2">Aperçu</div>
+            <div className="border rounded-lg p-4 bg-white">
+              <div className="text-gray-900 font-medium mb-2">{footerCMS[activeLang].companyName || 'Royal Carrelages'}</div>
+              <div className="text-gray-600 text-sm mb-3">{footerCMS[activeLang].description || 'Description'}</div>
+              <ul className="text-gray-700 text-sm space-y-1">
+                {(footerCMS[activeLang].addressLines || []).map((l, i) => (
+                  <li key={i}>{l || 'Adresse'}</li>
+                ))}
+                <li>{footerCMS[activeLang].phone || 'Téléphone'}</li>
+                <li>{footerCMS[activeLang].email || 'Email'}</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
@@ -401,6 +503,21 @@ export default function SettingsManagement() {
               />
             ))}
           </div>
+
+          <div className="mt-6">
+            <div className="text-sm text-gray-600 mb-2">Aperçu</div>
+            <div className="border rounded-lg p-4 bg-white">
+              <div className="text-2xl font-light text-gray-800 mb-2">{contactCMS[activeLang].title || 'Contact'}</div>
+              <div className="text-gray-600 mb-3">{contactCMS[activeLang].description || 'Description'}</div>
+              <ul className="text-gray-700 text-sm space-y-1">
+                {(contactCMS[activeLang].addressLines || []).map((l, i) => (
+                  <li key={i}>{l || 'Adresse'}</li>
+                ))}
+                <li>{contactCMS[activeLang].phone || 'Téléphone'}</li>
+                <li>{contactCMS[activeLang].email || 'Email'}</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -421,6 +538,14 @@ export default function SettingsManagement() {
             className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
             placeholder="Description Héro"
           />
+        </div>
+
+        <div className="mt-6">
+          <div className="text-sm text-gray-600 mb-2">Aperçu</div>
+          <div className="border rounded-lg p-4 bg-white">
+            <div className="text-2xl font-light text-gray-800">{professionalsCMS[activeLang].title || 'Espace Professionnels'}</div>
+            <div className="text-gray-600">{professionalsCMS[activeLang].description || 'Description'}</div>
+          </div>
         </div>
       </div>
 
