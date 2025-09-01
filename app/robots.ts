@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function robots(): MetadataRoute.Robots {
-  const site = 'https://www.royal-carrelages.example';
+  const site = 'https://royalcarrelages.fr';
   return {
     rules: [
       {

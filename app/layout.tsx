@@ -32,7 +32,7 @@ export const metadata: Metadata = {
     shortcut: "/icon.ico",
     apple: "/icon.ico",
   },
-  metadataBase: new URL("https://www.royal-carrelages.example"),
+  metadataBase: new URL("https://royalcarrelages.fr"),
 };
 
 export default function RootLayout({
@@ -44,7 +44,7 @@ export default function RootLayout({
     <html lang="fr" suppressHydrationWarning={true}>
       <head>
         {/* Canonical */}
-        <link rel="canonical" href="https://www.royal-carrelages.example" />
+        <link rel="canonical" href="https://royalcarrelages.fr" />
         {/* Robots default */}
         <meta name="robots" content="index, follow" />
         {/* GA ölçüm kimliği env ile */}

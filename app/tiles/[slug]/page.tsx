@@ -32,5 +32,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${product.koleksiyonu} ${product.renk} ${product.olcusu}`,
     description: `${product.koleksiyonu} • ${product.renk} • ${product.olcusu}`,
+    alternates: { canonical: `https://royalcarrelages.fr/carrelages/${slug}` },
+    openGraph: {
+      title: `${product.koleksiyonu} ${product.renk} ${product.olcusu}`,
+      description: `${product.koleksiyonu} • ${product.renk} • ${product.olcusu}`,
+      url: `https://royalcarrelages.fr/carrelages/${slug}`,
+      type: 'product',
+    },
   };
 }

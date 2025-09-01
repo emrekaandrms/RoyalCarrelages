@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://www.royal-carrelages.example';
+  const baseUrl = 'https://royalcarrelages.fr';
 
   const staticUrls: MetadataRoute.Sitemap = [
     { url: `${baseUrl}/`, changeFrequency: 'weekly', priority: 1 },
