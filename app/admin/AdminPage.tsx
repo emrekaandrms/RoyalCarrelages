@@ -5,7 +5,8 @@ import { useState } from 'react';
 import AdminHeader from './AdminHeader';
 import ProductManagement from './ProductManagement';
 import BannerManagement from './BannerManagement';
-import FeaturesManagement from './FeaturesManagement';
+// FeaturesManagement removed; featured products managed under Accueil
+import HomeManagement from './HomeManagement';
 import SettingsManagement from './SettingsManagement';
 
 export default function AdminPage() {
@@ -72,7 +73,7 @@ export default function AdminPage() {
   const tabs = [
     { id: 'products', name: 'Produits', icon: 'ri-shopping-bag-line' },
     { id: 'banners', name: 'Bannières', icon: 'ri-image-line' },
-    { id: 'features', name: 'Features', icon: 'ri-flashlight-line' },
+    { id: 'home', name: 'Accueil', icon: 'ri-home-8-line' },
     { id: 'settings', name: 'Paramètres', icon: 'ri-settings-3-line' }
   ];
 
@@ -106,7 +107,7 @@ export default function AdminPage() {
           <div className="bg-white rounded-lg shadow-sm">
             {activeTab === 'products' && <ProductManagement />}
             {activeTab === 'banners' && <BannerManagement />}
-            {activeTab === 'features' && <FeaturesManagement />}
+            {activeTab === 'home' && <HomeManagement />}
             {activeTab === 'settings' && <SettingsManagement />}
           </div>
         </div>

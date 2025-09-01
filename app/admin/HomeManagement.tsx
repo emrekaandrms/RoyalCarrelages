@@ -14,6 +14,8 @@ interface ProductLite {
 export default function HomeManagement() {
   const [allProducts, setAllProducts] = useState<ProductLite[]>([]);
   const [query, setQuery] = useState('');
+  const [filterName, setFilterName] = useState('');
+  const [filterSize, setFilterSize] = useState('');
   const [pickerOpen, setPickerOpen] = useState<{ open: boolean; forPos: number | null }>({ open: false, forPos: null });
   const [heroUrl, setHeroUrl] = useState('');
   const [featured, setFeatured] = useState<Array<{ position: number; productId: string }>>(
@@ -24,8 +26,11 @@ export default function HomeManagement() {
 
   useEffect(() => {
     (async () => {
+      const qs = new URLSearchParams();
+      if (filterName) qs.set('name', filterName);
+      if (filterSize) qs.set('size', filterSize);
       const [prodsRes, heroRes, featRes, overRes] = await Promise.all([
-        fetch('/api/products?limit=200'),
+        fetch(`/api/products?limit=200&${qs.toString()}`),
         fetch('/api/settings/heroImageUrl'),
         fetch('/api/featured'),
         fetch('/api/settings/featuredImageOverrides'),
@@ -160,13 +165,37 @@ export default function HomeManagement() {
                   <i className="ri-close-line text-xl"></i>
                 </button>
               </div>
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded text-sm mb-4"
-                placeholder="Rechercher (nom, couleur, taille, slug)"
-              />
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+                <input
+                  type="text"
+                  value={filterName}
+                  onChange={(e) => setFilterName(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Nom du produit"
+                />
+                <input
+                  type="text"
+                  value={filterSize}
+                  onChange={(e) => setFilterSize(e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Taille (ex: 60x120)"
+                />
+                <button
+                  onClick={async () => {
+                    const qs = new URLSearchParams();
+                    if (filterName) qs.set('name', filterName);
+                    if (filterSize) qs.set('size', filterSize);
+                    const res = await fetch(`/api/products?limit=200&${qs.toString()}`);
+                    if (res.ok) {
+                      const j = await res.json();
+                      setAllProducts(j.products || []);
+                    }
+                  }}
+                  className="bg-gray-800 text-white px-4 py-2 rounded text-sm"
+                >
+                  Rechercher
+                </button>
+              </div>
               <div className="max-h-96 overflow-auto border border-gray-100 rounded">
                 <ul>
                   {filtered.map((p) => (
