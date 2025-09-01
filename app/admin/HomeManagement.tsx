@@ -17,7 +17,6 @@ export default function HomeManagement() {
   const [filterName, setFilterName] = useState('');
   const [filterSize, setFilterSize] = useState('');
   const [pickerOpen, setPickerOpen] = useState<{ open: boolean; forPos: number | null }>({ open: false, forPos: null });
-  const [heroUrl, setHeroUrl] = useState('');
   const [featured, setFeatured] = useState<Array<{ position: number; productId: string }>>(
     Array.from({ length: 6 }, (_, i) => ({ position: i + 1, productId: '' }))
   );
@@ -30,9 +29,8 @@ export default function HomeManagement() {
       const qs = new URLSearchParams();
       if (filterName) qs.set('name', filterName);
       if (filterSize) qs.set('size', filterSize);
-      const [prodsRes, heroRes, featRes, overRes, titleRes] = await Promise.all([
+      const [prodsRes, featRes, overRes, titleRes] = await Promise.all([
         fetch(`/api/products?limit=200&${qs.toString()}`),
-        fetch('/api/settings/heroImageUrl'),
         fetch('/api/featured'),
         fetch('/api/settings/featuredImageOverrides'),
         fetch('/api/settings/featuredTitleOverrides'),
@@ -42,10 +40,7 @@ export default function HomeManagement() {
         // our /api/products returns { products, ... }
         setAllProducts(json.products || []);
       }
-      if (heroRes.ok) {
-        const json = await heroRes.json();
-        setHeroUrl(json.value || '');
-      }
+      // hero url removed from this page
       if (featRes.ok) {
         const items = await featRes.json();
         if (Array.isArray(items) && items.length) {
@@ -93,11 +88,7 @@ export default function HomeManagement() {
   const onSave = async () => {
     try {
       setSaving(true);
-      await fetch('/api/settings/heroImageUrl', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ value: heroUrl }),
-      });
+      // hero url removed from this page
       await fetch('/api/featured', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -125,16 +116,7 @@ export default function HomeManagement() {
     <div className="p-6 space-y-8">
       <h2 className="text-2xl font-light text-gray-800">Gestion de la page d'accueil</h2>
 
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-4">Image Hero</h3>
-        <input
-          type="url"
-          value={heroUrl}
-          onChange={(e) => setHeroUrl(e.target.value)}
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-          placeholder="https://..."
-        />
-      </div>
+      {/* Image Hero field removed from Accueil */}
 
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-800 mb-4">Produits mis en avant (6)</h3>
