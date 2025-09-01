@@ -5,10 +5,7 @@ import { translations } from '@/lib/translations';
 
 type Language = 'fr' | 'en';
 
-interface SettingsPayload {
-  heroImageUrl: string;
-  featuredSlugs: string[];
-}
+// Legacy settings (hero image, featured slugs) removed from this page
 
 interface CMSHero {
   title: string;
@@ -52,10 +49,7 @@ interface CMSProfessionalsB2B {
   hours: string;
 }
 
-const DEFAULTS: SettingsPayload = {
-  heroImageUrl: '',
-  featuredSlugs: ['', '', '', '', '', ''],
-};
+// No DEFAULTS needed for removed legacy settings
 
 async function fetchSetting<T = any>(key: string): Promise<T | null> {
   const res = await fetch(`/api/settings/${key}`, { cache: 'no-store' });
@@ -76,7 +70,6 @@ async function saveSetting(key: string, value: any) {
 export default function SettingsManagement() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [settings, setSettings] = useState<SettingsPayload>(DEFAULTS);
   const [activeLang, setActiveLang] = useState<Language>('fr');
 
   const [heroCMS, setHeroCMS] = useState<Record<Language, CMSHero>>({
@@ -103,9 +96,6 @@ export default function SettingsManagement() {
   useEffect(() => {
     (async () => {
       setLoading(true);
-      const heroImageUrl = (await fetchSetting<string>('heroImageUrl')) ?? '';
-      const featuredSlugs = (await fetchSetting<string[]>('featuredSlugs')) ?? DEFAULTS.featuredSlugs;
-
       const [heroFr, heroEn] = await Promise.all([
         fetchSetting<CMSHero>('cms.hero.fr'),
         fetchSetting<CMSHero>('cms.hero.en'),
@@ -198,7 +188,6 @@ export default function SettingsManagement() {
         hours: 'Mon-Fri 8am-7pm',
       };
 
-      setSettings({ heroImageUrl, featuredSlugs });
       setHeroCMS((prev) => ({
         fr: heroFr ?? heroFallbackFr,
         en: heroEn ?? heroFallbackEn,
@@ -247,19 +236,9 @@ export default function SettingsManagement() {
     };
   }
 
-  const updateFeatured = (idx: number, value: string) => {
-    setSettings((prev) => {
-      const next = [...prev.featuredSlugs];
-      next[idx] = value;
-      return { ...prev, featuredSlugs: next };
-    });
-  };
-
   const onSave = async () => {
     try {
       setSaving(true);
-      await saveSetting('heroImageUrl', settings.heroImageUrl);
-      await saveSetting('featuredSlugs', settings.featuredSlugs);
       await saveSetting('cms.hero.fr', heroCMS.fr);
       await saveSetting('cms.hero.en', heroCMS.en);
       await saveSetting('cms.footer.fr', footerCMS.fr);
@@ -295,18 +274,6 @@ export default function SettingsManagement() {
           className={`px-4 py-2 rounded ${activeLang === 'en' ? 'bg-gray-800 text-white' : 'text-gray-700 hover:bg-gray-50'}`}
           onClick={() => setActiveLang('en')}
         >EN</button>
-      </div>
-
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-4">Image Hero</h3>
-        <input
-          type="url"
-          value={settings.heroImageUrl}
-          onChange={(e) => setSettings({ ...settings, heroImageUrl: e.target.value })}
-          className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-          placeholder="https://..."
-        />
-        <p className="text-xs text-gray-500 mt-2">URL d'image utilisée comme arrière-plan de la section Hero.</p>
       </div>
 
       <div className="bg-gray-50 p-6 rounded-lg">
@@ -365,7 +332,7 @@ export default function SettingsManagement() {
           <div
             className="relative rounded-lg overflow-hidden h-48 bg-cover bg-center"
             style={{
-              backgroundImage: `linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('${settings.heroImageUrl || 'https://readdy.ai/api/search-image?query=modern%20interior&width=1200&height=600'}')`
+              backgroundImage: `linear-gradient(rgba(0,0,0,.35), rgba(0,0,0,.35)), url('https://readdy.ai/api/search-image?query=modern%20interior&width=1200&height=600')`
             }}
           >
             <div className="absolute inset-0 flex items-center">
@@ -386,22 +353,7 @@ export default function SettingsManagement() {
         </div>
       </div>
 
-      <div className="bg-gray-50 p-6 rounded-lg">
-        <h3 className="text-lg font-medium text-gray-800 mb-4">Produits mis en avant (6 slugs)</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {settings.featuredSlugs.map((slug, idx) => (
-            <input
-              key={idx}
-              type="text"
-              value={slug}
-              onChange={(e) => updateFeatured(idx, e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
-              placeholder={`slug produit #${idx + 1}`}
-            />
-          ))}
-        </div>
-        <p className="text-xs text-gray-500 mt-2">Entrez les slugs de produits existants (ex: adel-beyaz-kristal-120x120).</p>
-      </div>
+      {/* Sections for Image Hero and Featured Products removed (managed in other tabs) */}
 
       <div className="bg-gray-50 p-6 rounded-lg">
         <h3 className="text-lg font-medium text-gray-800 mb-4">Pied de page ({activeLang.toUpperCase()})</h3>
