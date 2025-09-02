@@ -286,7 +286,7 @@ export default function SettingsManagement() {
             className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
             placeholder="Titre principal"
           />
-          <input
+        <input
             type="text"
             value={heroCMS[activeLang].subtitle}
             onChange={(e) => setHeroCMS((prev) => ({ ...prev, [activeLang]: { ...prev[activeLang], subtitle: e.target.value } }))}
