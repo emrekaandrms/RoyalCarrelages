@@ -32,6 +32,8 @@ export default function ProductManagement() {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [filterName, setFilterName] = useState('');
   const [filterSize, setFilterSize] = useState('');
+  const [debouncedName, setDebouncedName] = useState('');
+  const [debouncedSize, setDebouncedSize] = useState('');
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [formData, setFormData] = useState<FormData>({
     koleksiyonu: '',
@@ -44,6 +46,17 @@ export default function ProductManagement() {
   });
   const [submitting, setSubmitting] = useState(false);
 
+  // Debounce des filtres pour éviter la requête à chaque frappe
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedName(filterName), 400);
+    return () => clearTimeout(t);
+  }, [filterName]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSize(filterSize), 400);
+    return () => clearTimeout(t);
+  }, [filterSize]);
+
   // Charger les produits
   const fetchProducts = async () => {
     try {
@@ -51,8 +64,10 @@ export default function ProductManagement() {
       const params = new URLSearchParams();
       params.set('page', String(page));
       params.set('limit', String(limit));
-      if (filterName) params.set('name', filterName);
-      if (filterSize) params.set('size', filterSize);
+      const nameQ = debouncedName.trim();
+      const sizeQ = debouncedSize.trim();
+      if (nameQ.length >= 2) params.set('name', nameQ);
+      if (sizeQ.length >= 2) params.set('size', sizeQ);
       const response = await fetch(`/api/products?${params.toString()}`);
       const data = await response.json();
       setProducts(data.products || []);
@@ -66,7 +81,7 @@ export default function ProductManagement() {
 
   useEffect(() => {
     fetchProducts();
-  }, [page, limit, filterName, filterSize]);
+  }, [page, limit, debouncedName, debouncedSize]);
 
   // Fonction de création de slug
   const createSlug = (koleksiyon: string, olcu: string, renk: string) => {

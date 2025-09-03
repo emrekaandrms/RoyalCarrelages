@@ -16,6 +16,8 @@ export default function HomeManagement() {
   const [query, setQuery] = useState('');
   const [filterName, setFilterName] = useState('');
   const [filterSize, setFilterSize] = useState('');
+  const [debouncedName, setDebouncedName] = useState('');
+  const [debouncedSize, setDebouncedSize] = useState('');
   const [pickerOpen, setPickerOpen] = useState<{ open: boolean; forPos: number | null }>({ open: false, forPos: null });
   const [featured, setFeatured] = useState<Array<{ position: number; productId: string }>>(
     Array.from({ length: 6 }, (_, i) => ({ position: i + 1, productId: '' }))
@@ -25,10 +27,22 @@ export default function HomeManagement() {
   const [titleOverrides, setTitleOverrides] = useState<Record<number, string>>({});
 
   useEffect(() => {
+    const t = setTimeout(() => setDebouncedName(filterName), 400);
+    return () => clearTimeout(t);
+  }, [filterName]);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSize(filterSize), 400);
+    return () => clearTimeout(t);
+  }, [filterSize]);
+
+  useEffect(() => {
     (async () => {
       const qs = new URLSearchParams();
-      if (filterName) qs.set('name', filterName);
-      if (filterSize) qs.set('size', filterSize);
+      const nameQ = debouncedName.trim();
+      const sizeQ = debouncedSize.trim();
+      if (nameQ.length >= 2) qs.set('name', nameQ);
+      if (sizeQ.length >= 2) qs.set('size', sizeQ);
       const [prodsRes, featRes, overRes, titleRes] = await Promise.all([
         fetch(`/api/products?limit=200&${qs.toString()}`),
         fetch('/api/featured'),
@@ -69,7 +83,7 @@ export default function HomeManagement() {
         setTitleOverrides(initial);
       }
     })();
-  }, []);
+  }, [debouncedName, debouncedSize]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();

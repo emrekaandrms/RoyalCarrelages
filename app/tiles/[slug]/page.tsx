@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       title: `${product.koleksiyonu} ${product.renk} ${product.olcusu}`,
       description: `${product.koleksiyonu} • ${product.renk} • ${product.olcusu}`,
       url: `https://royalcarrelages.fr/carrelages/${slug}`,
-      type: 'product',
+      type: 'website',
     },
   };
 }
