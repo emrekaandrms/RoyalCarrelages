@@ -16,7 +16,7 @@ export default function AdminPage() {
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
-    if (loginData.username === 'admin' && loginData.password === 'admin123') {
+    if (loginData.username === 'Royal' && loginData.password === 'Royal1789.') {
       setIsAuthenticated(true);
     } else {
       alert('Identifiants incorrects');
@@ -62,9 +62,6 @@ export default function AdminPage() {
               Se connecter
             </button>
           </form>
-          <p className="text-xs text-gray-500 mt-4 text-center">
-            Demo: admin / admin123
-          </p>
         </div>
       </div>
     );
