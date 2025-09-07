@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 export default function ContactPage() {
   const { t, language } = useLanguage();
   const [cms, setCms] = useState<{ title?: string; description?: string; addressLines?: string[]; phone?: string; email?: string; hoursLines?: string[]; showroomTitle?: string } | null>(null);
+  const [locations, setLocations] = useState<Array<{ name?: string; addressLines?: string[]; phone?: string; email?: string }> | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -25,6 +26,11 @@ export default function ContactPage() {
         if (res.ok) {
           const json = await res.json();
           setCms(json.value || null);
+        }
+        const lres = await fetch(`/api/settings/cms.locations.${language}`, { cache: 'no-store' });
+        if (lres.ok) {
+          const json = await lres.json();
+          setLocations(Array.isArray(json.value) ? json.value : null);
         }
       } catch {
         // ignore
@@ -78,42 +84,49 @@ export default function ContactPage() {
             <div>
               <h2 className="text-2xl font-light text-gray-800 mb-8">Informations de Contact</h2>
               
-              <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="ri-map-pin-line w-6 h-6 flex items-center justify-center text-xl text-gray-600"></i>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800 mb-1">Adresse</h3>
-                    <p className="text-gray-600">
-                      {(cms?.addressLines && cms.addressLines.length ? cms.addressLines : ['123 Rue de la Céramique', '75001 Paris, France']).map((l, i) => (
-                        <span key={i}>
-                          {l}{i === (cms?.addressLines?.length || 2) - 1 ? '' : <br />}
-                        </span>
-                      ))}
-                    </p>
-                  </div>
-                </div>
+              <div className="space-y-8">
+                {(locations && locations.length ? locations : [
+                  { name: 'Showroom 1', addressLines: ['123 Rue de la Céramique', '75001 Paris, France'], phone: '+33 1 23 45 67 89', email: 'paris@royalcarrelages.fr' },
+                  { name: 'Showroom 2', addressLines: ['45 Avenue du Design', '69002 Lyon, France'], phone: '+33 4 12 34 56 78', email: 'lyon@royalcarrelages.fr' },
+                ]).slice(0,2).map((loc, idx) => (
+                  <div key={idx} className="space-y-6">
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i className="ri-map-pin-line w-6 h-6 flex items-center justify-center text-xl text-gray-600"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-800 mb-1">{loc.name || 'Adresse'}</h3>
+                        <p className="text-gray-600">
+                          {(loc.addressLines && loc.addressLines.length ? loc.addressLines : ['Adresse ligne 1','Adresse ligne 2']).map((l, i) => (
+                            <span key={i}>
+                              {l}{i === (loc.addressLines?.length || 2) - 1 ? '' : <br />}
+                            </span>
+                          ))}
+                        </p>
+                      </div>
+                    </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="ri-phone-line w-6 h-6 flex items-center justify-center text-xl text-gray-600"></i>
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800 mb-1">Téléphone</h3>
-                    <p className="text-gray-600">{cms?.phone || '+33 1 23 45 67 89'}</p>
-                  </div>
-                </div>
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i className="ri-phone-line w-6 h-6 flex items-center justify-center text-xl text-gray-600"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-800 mb-1">Téléphone</h3>
+                        <p className="text-gray-600">{loc.phone || cms?.phone || '+33 1 23 45 67 89'}</p>
+                      </div>
+                    </div>
 
-                <div className="flex items-start space-x-4">
-                  <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <i className="ri-mail-line w-6 h-6 flex items-center justify-center text-xl text-gray-600"></i>
+                    <div className="flex items-start space-x-4">
+                      <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                        <i className="ri-mail-line w-6 h-6 flex items-center justify-center text-xl text-gray-600"></i>
+                      </div>
+                      <div>
+                        <h3 className="font-medium text-gray-800 mb-1">Email</h3>
+                        <p className="text-gray-600">{loc.email || cms?.email || 'contact@ceramiquedesign.fr'}</p>
+                      </div>
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="font-medium text-gray-800 mb-1">Email</h3>
-                    <p className="text-gray-600">{cms?.email || 'contact@ceramiquedesign.fr'}</p>
-                  </div>
-                </div>
+                ))}
 
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">

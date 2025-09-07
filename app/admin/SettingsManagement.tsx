@@ -49,6 +49,13 @@ interface CMSProfessionalsB2B {
   hours: string;
 }
 
+interface CMSLocation {
+  name?: string;
+  addressLines: string[];
+  phone?: string;
+  email?: string;
+}
+
 // No DEFAULTS needed for removed legacy settings
 
 async function fetchSetting<T = any>(key: string): Promise<T | null> {
@@ -92,6 +99,16 @@ export default function SettingsManagement() {
     fr: { contactTitle: '', contactDescription: '', emailLabel: 'Email:', email: '', phoneLabel: 'Téléphone:', phone: '', hoursLabel: 'Horaires:', hours: '' },
     en: { contactTitle: '', contactDescription: '', emailLabel: 'Email:', email: '', phoneLabel: 'Phone:', phone: '', hoursLabel: 'Hours:', hours: '' },
   });
+  const [locationsCMS, setLocationsCMS] = useState<Record<Language, CMSLocation[]>>({
+    fr: [
+      { name: 'Showroom 1', addressLines: ['123 Rue de la Céramique', '75001 Paris, France'], phone: '+33 1 23 45 67 89', email: 'paris@royalcarrelages.fr' },
+      { name: 'Showroom 2', addressLines: ['45 Avenue du Design', '69002 Lyon, France'], phone: '+33 4 12 34 56 78', email: 'lyon@royalcarrelages.fr' },
+    ],
+    en: [
+      { name: 'Showroom 1', addressLines: ['123 Rue de la Céramique', '75001 Paris, France'], phone: '+33 1 23 45 67 89', email: 'paris@royalcarrelages.fr' },
+      { name: 'Showroom 2', addressLines: ['45 Avenue du Design', '69002 Lyon, France'], phone: '+33 4 12 34 56 78', email: 'lyon@royalcarrelages.fr' },
+    ],
+  });
 
   useEffect(() => {
     (async () => {
@@ -115,6 +132,10 @@ export default function SettingsManagement() {
       const [proB2BFr, proB2BEn] = await Promise.all([
         fetchSetting<CMSProfessionalsB2B>('cms.professionals.b2b.fr'),
         fetchSetting<CMSProfessionalsB2B>('cms.professionals.b2b.en'),
+      ]);
+      const [locFr, locEn] = await Promise.all([
+        fetchSetting<CMSLocation[]>('cms.locations.fr'),
+        fetchSetting<CMSLocation[]>('cms.locations.en'),
       ]);
 
       // Fallbacks to current site content so the admin sees existing texts
@@ -208,6 +229,16 @@ export default function SettingsManagement() {
         fr: proB2BFr ?? proB2BFallbackFr,
         en: proB2BEn ?? proB2BFallbackEn,
       }));
+      setLocationsCMS((prev) => ({
+        fr: sanitizeLocations(locFr) ?? [
+          { name: 'Showroom 1', addressLines: ['123 Rue de la Céramique', '75001 Paris, France'], phone: '+33 1 23 45 67 89', email: 'paris@royalcarrelages.fr' },
+          { name: 'Showroom 2', addressLines: ['45 Avenue du Design', '69002 Lyon, France'], phone: '+33 4 12 34 56 78', email: 'lyon@royalcarrelages.fr' },
+        ],
+        en: sanitizeLocations(locEn) ?? [
+          { name: 'Showroom 1', addressLines: ['123 Rue de la Céramique', '75001 Paris, France'], phone: '+33 1 23 45 67 89', email: 'paris@royalcarrelages.fr' },
+          { name: 'Showroom 2', addressLines: ['45 Avenue du Design', '69002 Lyon, France'], phone: '+33 4 12 34 56 78', email: 'lyon@royalcarrelages.fr' },
+        ],
+      }));
       setLoading(false);
     })();
   }, []);
@@ -236,6 +267,20 @@ export default function SettingsManagement() {
     };
   }
 
+  function sanitizeLocations(val: CMSLocation[] | null | undefined): CMSLocation[] | undefined {
+    if (!Array.isArray(val)) return undefined;
+    const normalized = val
+      .map((loc) => ({
+        name: loc?.name ?? '',
+        addressLines: Array.isArray(loc?.addressLines) && loc.addressLines.length ? loc.addressLines : ['', ''],
+        phone: loc?.phone ?? '',
+        email: loc?.email ?? '',
+      }))
+      .slice(0, 2);
+    while (normalized.length < 2) normalized.push({ name: '', addressLines: ['', ''], phone: '', email: '' });
+    return normalized;
+  }
+
   const onSave = async () => {
     try {
       setSaving(true);
@@ -249,6 +294,8 @@ export default function SettingsManagement() {
       await saveSetting('cms.professionals.en', professionalsCMS.en);
       await saveSetting('cms.professionals.b2b.fr', professionalsB2B.fr);
       await saveSetting('cms.professionals.b2b.en', professionalsB2B.en);
+      await saveSetting('cms.locations.fr', locationsCMS.fr);
+      await saveSetting('cms.locations.en', locationsCMS.en);
       alert('Paramètres enregistrés.');
     } catch (e) {
       alert('Erreur lors de la sauvegarde.');
@@ -618,6 +665,96 @@ export default function SettingsManagement() {
               <div><strong>{professionalsB2B[activeLang].emailLabel || 'Email:'}</strong> {professionalsB2B[activeLang].email || 'example@domain.com'}</div>
               <div><strong>{professionalsB2B[activeLang].phoneLabel || 'Téléphone:'}</strong> {professionalsB2B[activeLang].phone || '+33 ...'}</div>
               <div><strong>{professionalsB2B[activeLang].hoursLabel || 'Horaires:'}</strong> {professionalsB2B[activeLang].hours || 'Lun-Ven ...'}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="bg-gray-50 p-6 rounded-lg">
+        <h3 className="text-lg font-medium text-gray-800 mb-4">Adresses (2 lieux) ({activeLang.toUpperCase()})</h3>
+        <div className="space-y-6">
+          {locationsCMS[activeLang].map((loc, idx) => (
+            <div key={idx} className="border rounded-lg p-4 bg-white">
+              <div className="text-sm text-gray-600 mb-2">Lieu {idx + 1}</div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <input
+                  type="text"
+                  value={loc.name || ''}
+                  onChange={(e) => setLocationsCMS((prev) => {
+                    const next = { ...prev } as any;
+                    const arr = [...next[activeLang]] as CMSLocation[];
+                    arr[idx] = { ...arr[idx], name: e.target.value };
+                    next[activeLang] = arr;
+                    return next;
+                  })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Nom du lieu (ex: Showroom Paris)"
+                />
+                <input
+                  type="text"
+                  value={loc.phone || ''}
+                  onChange={(e) => setLocationsCMS((prev) => {
+                    const next = { ...prev } as any;
+                    const arr = [...next[activeLang]] as CMSLocation[];
+                    arr[idx] = { ...arr[idx], phone: e.target.value };
+                    next[activeLang] = arr;
+                    return next;
+                  })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Téléphone"
+                />
+                <input
+                  type="email"
+                  value={loc.email || ''}
+                  onChange={(e) => setLocationsCMS((prev) => {
+                    const next = { ...prev } as any;
+                    const arr = [...next[activeLang]] as CMSLocation[];
+                    arr[idx] = { ...arr[idx], email: e.target.value };
+                    next[activeLang] = arr;
+                    return next;
+                  })}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Email"
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                {(loc.addressLines || ['', '']).map((line, i) => (
+                  <input
+                    key={i}
+                    type="text"
+                    value={line}
+                    onChange={(e) => setLocationsCMS((prev) => {
+                      const next = { ...prev } as any;
+                      const arr = [...next[activeLang]] as CMSLocation[];
+                      const lines = [...(arr[idx].addressLines || ['', ''])];
+                      lines[i] = e.target.value;
+                      arr[idx] = { ...arr[idx], addressLines: lines };
+                      next[activeLang] = arr;
+                      return next;
+                    })}
+                    className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                    placeholder={`Adresse ligne ${i + 1}`}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+          <div className="text-sm text-gray-600">Deux lieux pris en charge. Pour plus de lieux, merci de nous contacter.</div>
+          <div className="mt-4">
+            <div className="text-sm text-gray-600 mb-2">Aperçu</div>
+            <div className="border rounded-lg p-4 bg-white">
+              {locationsCMS[activeLang].map((l, i) => (
+                <div key={i} className="mb-3 last:mb-0">
+                  <div className="font-medium text-gray-900">{l.name || `Lieu ${i + 1}`}</div>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    {(l.addressLines || []).map((line, j) => (
+                      <li key={j}>{line || 'Adresse'}</li>
+                    ))}
+                    <li>{l.phone || 'Téléphone'}</li>
+                    <li>{l.email || 'Email'}</li>
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
         </div>

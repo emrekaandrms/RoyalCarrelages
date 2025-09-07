@@ -10,6 +10,7 @@ export default function ProfessionalsPage() {
   const { t, language } = useLanguage();
   const [cms, setCms] = useState<{ title?: string; description?: string } | null>(null);
   const [b2b, setB2b] = useState<{ contactTitle?: string; contactDescription?: string; emailLabel?: string; email?: string; phoneLabel?: string; phone?: string; hoursLabel?: string; hours?: string } | null>(null);
+  const [locations, setLocations] = useState<Array<{ name?: string; addressLines?: string[]; phone?: string; email?: string }> | null>(null);
   const [formData, setFormData] = useState({
     company: '',
     contact: '',
@@ -32,6 +33,11 @@ export default function ProfessionalsPage() {
         if (b2bres.ok) {
           const json = await b2bres.json();
           setB2b(json.value || null);
+        }
+        const lres = await fetch(`/api/settings/cms.locations.${language}`, { cache: 'no-store' });
+        if (lres.ok) {
+          const json = await lres.json();
+          setLocations(Array.isArray(json.value) ? json.value : null);
         }
       } catch {
         // ignore
@@ -321,6 +327,27 @@ export default function ProfessionalsPage() {
                   Envoyer la Demande
                 </button>
               </form>
+            </div>
+          </div>
+
+          <div className="mt-16">
+            <h2 className="text-2xl font-light text-gray-800 mb-8">Nos Adresses</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {(locations && locations.length ? locations : [
+                { name: 'Showroom 1', addressLines: ['123 Rue de la Céramique', '75001 Paris, France'], phone: '+33 1 23 45 67 89', email: 'paris@royalcarrelages.fr' },
+                { name: 'Showroom 2', addressLines: ['45 Avenue du Design', '69002 Lyon, France'], phone: '+33 4 12 34 56 78', email: 'lyon@royalcarrelages.fr' },
+              ]).slice(0,2).map((loc, idx) => (
+                <div key={idx} className="bg-gray-50 rounded-lg p-6">
+                  <div className="text-gray-900 font-medium mb-2">{loc.name || `Lieu ${idx + 1}`}</div>
+                  <ul className="text-gray-700 text-sm space-y-1">
+                    {(loc.addressLines && loc.addressLines.length ? loc.addressLines : ['Adresse ligne 1','Adresse ligne 2']).map((line, i) => (
+                      <li key={i}>{line}</li>
+                    ))}
+                    <li>{loc.phone || '+33 1 23 45 67 89'}</li>
+                    <li>{loc.email || 'contact@ceramiquedesign.fr'}</li>
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
         </div>
