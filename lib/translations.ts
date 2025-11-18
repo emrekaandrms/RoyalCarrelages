@@ -71,7 +71,8 @@ export const translations = {
         sütlükahve: 'café au lait',
         koyu: 'foncé',
         açık: 'clair'
-      }
+      },
+      whatsappMessage: 'Bonjour, je souhaite obtenir une information tarifaire pour {collection} - {color} ({size})'
     },
     features: {
       title: 'Pourquoi Choisir Nos Carreaux',
@@ -137,6 +138,154 @@ export const translations = {
       privacy: 'Politique de Confidentialité',
       terms: 'Conditions d\'Utilisation',
       rights: 'Tous droits réservés.'
+    },
+    contactPage: {
+      defaultTitle: 'Contactez-nous',
+      defaultDescription: 'Notre équipe d\'experts est là pour vous accompagner dans tous vos projets. N\'hésitez pas à nous contacter pour une consultation personnalisée.',
+      infoTitle: 'Informations de Contact',
+      addressLabel: 'Adresse',
+      phoneLabel: 'Téléphone',
+      emailLabel: 'Email',
+      hoursLabel: 'Horaires',
+      followUsTitle: 'Suivez-nous',
+      social: {
+        facebook: 'Facebook',
+        instagram: 'Instagram'
+      },
+      formTitle: 'Envoyez-nous un Message',
+      successMessage: 'Votre message a été envoyé avec succès! Nous vous répondrons bientôt.',
+      form: {
+        nameLabel: 'Nom complet *',
+        emailLabel: 'Email *',
+        phoneLabel: 'Téléphone',
+        subjectLabel: 'Sujet *',
+        subjectPlaceholder: 'Sélectionnez un sujet',
+        messageLabel: 'Message *',
+        messagePlaceholder: 'Décrivez votre projet ou vos besoins...',
+        submit: 'Envoyer le Message',
+        options: {
+          quote: 'Demande de devis',
+          advice: 'Conseil produit',
+          installation: 'Installation',
+          professional: 'Espace professionnel',
+          other: 'Autre'
+        }
+      },
+      subjects: {
+        quote: 'Demande de devis',
+        advice: 'Conseil produit',
+        installation: 'Installation',
+        professional: 'Espace professionnel',
+        other: 'Autre'
+      },
+      showroomTitleFallback: 'Nos Showrooms',
+      locationFallback: 'Showroom {index}'
+    },
+    professionalsPage: {
+      hero: {
+        title: 'Espace Professionnels',
+        description: 'Des services dédiés aux architectes, décorateurs, entreprises du bâtiment et revendeurs pour accompagner vos projets.'
+      },
+      services: {
+        title: 'Nos Services Professionnels',
+        description: 'Nous comprenons les besoins spécifiques des professionnels et proposons des solutions adaptées à chaque métier.',
+        list: [
+          {
+            icon: 'ri-discount-percent-line',
+            title: 'Tarifs Préférentiels',
+            description: 'Bénéficiez de remises importantes sur l\'ensemble de notre gamme selon vos volumes d\'achat.'
+          },
+          {
+            icon: 'ri-truck-line',
+            title: 'Livraison Express',
+            description: 'Livraison rapide sur chantier avec possibilité de programmation selon votre planning.'
+          },
+          {
+            icon: 'ri-customer-service-2-line',
+            title: 'Support Technique',
+            description: 'Équipe dédiée pour vous conseiller sur le choix des produits et techniques de pose.'
+          },
+          {
+            icon: 'ri-file-text-line',
+            title: 'Devis Personnalisés',
+            description: 'Établissement rapide de devis détaillés avec références techniques complètes.'
+          },
+          {
+            icon: 'ri-calendar-check-line',
+            title: 'Stock Réservé',
+            description: 'Possibilité de réserver du stock pour vos projets avec paiement différé.'
+          },
+          {
+            icon: 'ri-medal-line',
+            title: 'Formations',
+            description: 'Sessions de formation sur nos nouveaux produits et techniques de pose.'
+          }
+        ]
+      },
+      advantages: {
+        title: 'Avantages Professionnels',
+        list: [
+          {
+            title: 'Remises Progressives',
+            description: 'Jusqu\'à 30% de remise selon vos volumes d\'achat annuels'
+          },
+          {
+            title: 'Échantillons Gratuits',
+            description: 'Service d\'échantillonnage complet pour vos présentations clients'
+          },
+          {
+            title: 'Documentation Technique',
+            description: 'Fiches produits détaillées, guides de pose, certifications'
+          },
+          {
+            title: 'Accompagnement Projet',
+            description: 'Conseil personnalisé et suivi de projet par nos experts'
+          }
+        ]
+      },
+      contactBox: {
+        title: 'Contact Dédié',
+        description: 'Notre équipe commerciale B2B est à votre disposition pour étudier vos besoins spécifiques.',
+        emailLabel: 'Email:',
+        phoneLabel: 'Téléphone:',
+        hoursLabel: 'Horaires:'
+      },
+      form: {
+        title: 'Inscription Professionnelle',
+        successMessage: 'Votre demande d\'inscription a été envoyée! Nous vous contacterons sous 24h.',
+        submit: 'Envoyer la Demande',
+        companyLabel: 'Nom de l\'entreprise *',
+        contactLabel: 'Nom du contact *',
+        emailLabel: 'Email *',
+        phoneLabel: 'Téléphone *',
+        activityLabel: 'Secteur d\'activité *',
+        activityPlaceholder: 'Sélectionnez votre activité',
+        activityOptions: {
+          architect: 'Architecte',
+          decorator: 'Décorateur d\'intérieur',
+          tiler: 'Entreprise de carrelage',
+          construction: 'Entreprise du bâtiment',
+          reseller: 'Revendeur',
+          other: 'Autre'
+        },
+        siretLabel: 'Numéro SIRET',
+        messageLabel: 'Votre projet / Besoins',
+        messagePlaceholder: 'Décrivez brièvement vos besoins...'
+      }
+    },
+    notFound: {
+      code: '404',
+      title: 'Page introuvable',
+      description: 'Désolé, la page que vous recherchez n\'existe pas ou a été déplacée. Utilisez la navigation ou revenez à l\'accueil.',
+      backHome: 'Revenir à l\'accueil',
+      viewTiles: 'Voir les carreaux'
+    },
+    common: {
+      whatsapp: 'WhatsApp',
+      whatsappTooltip: 'Discuter sur WhatsApp',
+      characters: 'caractères',
+      error: 'Une erreur est survenue. Veuillez réessayer.',
+      networkError: 'Erreur réseau.'
     }
   },
   en: {
@@ -211,7 +360,8 @@ export const translations = {
         sütlükahve: 'latte',
         koyu: 'dark',
         açık: 'light'
-      }
+      },
+      whatsappMessage: 'Hello, I would like to get price information for {collection} - {color} ({size})'
     },
     features: {
       title: 'Why Choose Our Tiles',
@@ -277,6 +427,154 @@ export const translations = {
       privacy: 'Privacy Policy',
       terms: 'Terms of Service',
       rights: 'All rights reserved.'
+    },
+    contactPage: {
+      defaultTitle: 'Contact Us',
+      defaultDescription: 'Our team of experts is here to support all of your projects. Reach out for a tailored consultation.',
+      infoTitle: 'Contact Information',
+      addressLabel: 'Address',
+      phoneLabel: 'Phone',
+      emailLabel: 'Email',
+      hoursLabel: 'Opening Hours',
+      followUsTitle: 'Follow Us',
+      social: {
+        facebook: 'Facebook',
+        instagram: 'Instagram'
+      },
+      formTitle: 'Send Us a Message',
+      successMessage: 'Your message has been sent successfully! We will get back to you shortly.',
+      form: {
+        nameLabel: 'Full name *',
+        emailLabel: 'Email *',
+        phoneLabel: 'Phone',
+        subjectLabel: 'Subject *',
+        subjectPlaceholder: 'Select a subject',
+        messageLabel: 'Message *',
+        messagePlaceholder: 'Describe your project or needs...',
+        submit: 'Send Message',
+        options: {
+          quote: 'Request a quote',
+          advice: 'Product advice',
+          installation: 'Installation',
+          professional: 'Professional space',
+          other: 'Other'
+        }
+      },
+      subjects: {
+        quote: 'Request a quote',
+        advice: 'Product advice',
+        installation: 'Installation',
+        professional: 'Professional space',
+        other: 'Other'
+      },
+      showroomTitleFallback: 'Our Showrooms',
+      locationFallback: 'Showroom {index}'
+    },
+    professionalsPage: {
+      hero: {
+        title: 'Professional Space',
+        description: 'Dedicated services for architects, designers, contractors, and retailers to support your projects.'
+      },
+      services: {
+        title: 'Our Professional Services',
+        description: 'We understand the specific needs of professionals and offer solutions tailored to every trade.',
+        list: [
+          {
+            icon: 'ri-discount-percent-line',
+            title: 'Preferential Rates',
+            description: 'Benefit from preferential rates across our entire range based on your purchase volumes.'
+          },
+          {
+            icon: 'ri-truck-line',
+            title: 'Express Delivery',
+            description: 'Fast site delivery with flexible scheduling to match your timeline.'
+          },
+          {
+            icon: 'ri-customer-service-2-line',
+            title: 'Technical Support',
+            description: 'Dedicated team to advise you on product selection and installation techniques.'
+          },
+          {
+            icon: 'ri-file-text-line',
+            title: 'Custom Quotes',
+            description: 'Quick turnaround on detailed quotes with complete technical references.'
+          },
+          {
+            icon: 'ri-calendar-check-line',
+            title: 'Reserved Stock',
+            description: 'Ability to reserve stock for your projects with deferred payment options.'
+          },
+          {
+            icon: 'ri-medal-line',
+            title: 'Training',
+            description: 'Training sessions on our latest products and installation techniques.'
+          }
+        ]
+      },
+      advantages: {
+        title: 'Professional Benefits',
+        list: [
+          {
+            title: 'Scaled Discounts',
+            description: 'Up to 30% discount depending on your annual purchase volumes'
+          },
+          {
+            title: 'Free Samples',
+            description: 'Comprehensive sampling service for your client presentations'
+          },
+          {
+            title: 'Technical Documentation',
+            description: 'Detailed product sheets, installation guides, certifications'
+          },
+          {
+            title: 'Project Support',
+            description: 'Personalised advice and project follow-up from our experts'
+          }
+        ]
+      },
+      contactBox: {
+        title: 'Dedicated Contact',
+        description: 'Our B2B sales team is available to review your specific requirements.',
+        emailLabel: 'Email:',
+        phoneLabel: 'Phone:',
+        hoursLabel: 'Hours:'
+      },
+      form: {
+        title: 'Professional Registration',
+        successMessage: 'Your registration request has been sent! We will contact you within 24 hours.',
+        submit: 'Send Request',
+        companyLabel: 'Company name *',
+        contactLabel: 'Contact person *',
+        emailLabel: 'Email *',
+        phoneLabel: 'Phone *',
+        activityLabel: 'Activity sector *',
+        activityPlaceholder: 'Select your activity',
+        activityOptions: {
+          architect: 'Architect',
+          decorator: 'Interior designer',
+          tiler: 'Tiling company',
+          construction: 'Construction company',
+          reseller: 'Reseller',
+          other: 'Other'
+        },
+        siretLabel: 'SIRET number',
+        messageLabel: 'Your project / Requirements',
+        messagePlaceholder: 'Describe your needs briefly...'
+      }
+    },
+    notFound: {
+      code: '404',
+      title: 'Page not found',
+      description: 'Sorry, the page you are looking for does not exist or has been moved. Use the navigation or go back to the homepage.',
+      backHome: 'Back to homepage',
+      viewTiles: 'View tiles'
+    },
+    common: {
+      whatsapp: 'WhatsApp',
+      whatsappTooltip: 'Chat on WhatsApp',
+      characters: 'characters',
+      error: 'An error occurred. Please try again.',
+      networkError: 'Network error.'
     }
   }
 };

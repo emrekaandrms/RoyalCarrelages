@@ -20,6 +20,9 @@ export default function ProfessionalsPage() {
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const services = t.professionalsPage.services.list;
+  const advantages = t.professionalsPage.advantages.list;
+  const activityOptions = t.professionalsPage.form.activityOptions;
   useEffect(() => {
     (async () => {
       try {
@@ -39,10 +42,24 @@ export default function ProfessionalsPage() {
     })();
   }, [language]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
-    setTimeout(() => setIsSubmitted(false), 3000);
+    try {
+      const res = await fetch('/api/professionals', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (res.ok) {
+        setIsSubmitted(true);
+        setFormData({ company: '', contact: '', email: '', phone: '', activity: '', siret: '', message: '' });
+        setTimeout(() => setIsSubmitted(false), 3000);
+      } else {
+        alert(t.common.error);
+      }
+    } catch {
+      alert(t.common.networkError);
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -51,39 +68,6 @@ export default function ProfessionalsPage() {
       [e.target.name]: e.target.value
     });
   };
-
-  const services = [
-    {
-      icon: 'ri-discount-percent-line',
-      title: 'Tarifs Préférentiels',
-      description: 'Bénéficiez de remises importantes sur l\'ensemble de notre gamme selon vos volumes d\'achat.'
-    },
-    {
-      icon: 'ri-truck-line',
-      title: 'Livraison Express',
-      description: 'Livraison rapide sur chantier avec possibilité de programmation selon votre planning.'
-    },
-    {
-      icon: 'ri-customer-service-2-line',
-      title: 'Support Technique',
-      description: 'Équipe dédiée pour vous conseiller sur le choix des produits et techniques de pose.'
-    },
-    {
-      icon: 'ri-file-text-line',
-      title: 'Devis Personnalisés',
-      description: 'Établissement rapide de devis détaillés avec références techniques complètes.'
-    },
-    {
-      icon: 'ri-calendar-check-line',
-      title: 'Stock Réservé',
-      description: 'Possibilité de réserver du stock pour vos projets avec paiement différé.'
-    },
-    {
-      icon: 'ri-medal-line',
-      title: 'Formations',
-      description: 'Sessions de formation sur nos nouveaux produits et techniques de pose.'
-    }
-  ];
 
   return (
     <div className="min-h-screen bg-white">
@@ -100,10 +84,10 @@ export default function ProfessionalsPage() {
             <div className="w-full max-w-7xl mx-auto px-8">
               <div className="max-w-3xl">
                 <h1 className="text-4xl md:text-5xl font-light text-white mb-4">
-                  {cms?.title || 'Espace Professionnels'}
+                  {cms?.title || t.professionalsPage.hero.title}
                 </h1>
                 <p className="text-xl text-gray-200 leading-relaxed">
-                  {cms?.description || `Des services dédiés aux architectes, décorateurs, entreprises du bâtiment et revendeurs pour accompagner vos projets.`}
+                  {cms?.description || t.professionalsPage.hero.description}
                 </p>
               </div>
             </div>
@@ -113,10 +97,10 @@ export default function ProfessionalsPage() {
         <div className="max-w-7xl mx-auto px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-light text-gray-800 mb-4">
-              Nos Services Professionnels
+              {t.professionalsPage.services.title}
             </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Nous comprenons les besoins spécifiques des professionnels et proposons des solutions adaptées à chaque métier.
+              {t.professionalsPage.services.description}
             </p>
           </div>
 
@@ -138,68 +122,46 @@ export default function ProfessionalsPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
             <div>
-              <h2 className="text-2xl font-light text-gray-800 mb-8">Avantages Professionnels</h2>
-              
+              <h2 className="text-2xl font-light text-gray-800 mb-8">{t.professionalsPage.advantages.title}</h2>
+
               <div className="space-y-6">
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-1">Remises Progressives</h4>
-                    <p className="text-gray-600">Jusqu'à 30% de remise selon vos volumes d'achat annuels</p>
+                {advantages.map((advantage, index) => (
+                  <div key={index} className="flex items-start space-x-4">
+                    <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
+                    <div>
+                      <h4 className="font-medium text-gray-800 mb-1">{advantage.title}</h4>
+                      <p className="text-gray-600">{advantage.description}</p>
+                    </div>
                   </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-1">Échantillons Gratuits</h4>
-                    <p className="text-gray-600">Service d'échantillonnage complet pour vos présentations clients</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-1">Documentation Technique</h4>
-                    <p className="text-gray-600">Fiches produits détaillées, guides de pose, certifications</p>
-                  </div>
-                </div>
-                
-                <div className="flex items-start space-x-4">
-                  <div className="w-2 h-2 bg-gray-800 rounded-full mt-2 flex-shrink-0"></div>
-                  <div>
-                    <h4 className="font-medium text-gray-800 mb-1">Accompagnement Projet</h4>
-                    <p className="text-gray-600">Conseil personnalisé et suivi de projet par nos experts</p>
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div className="mt-12 p-6 bg-gray-50 rounded-lg">
-                <h3 className="text-xl font-medium text-gray-800 mb-4">{b2b?.contactTitle || 'Contact Dédié'}</h3>
+                <h3 className="text-xl font-medium text-gray-800 mb-4">{b2b?.contactTitle || t.professionalsPage.contactBox.title}</h3>
                 <p className="text-gray-600 mb-4">
-                  {b2b?.contactDescription || 'Notre équipe commerciale B2B est à votre disposition pour étudier vos besoins spécifiques.'}
+                  {b2b?.contactDescription || t.professionalsPage.contactBox.description}
                 </p>
                 <div className="space-y-2 text-gray-600">
-                  <p><strong>{b2b?.emailLabel || 'Email:'}</strong> {b2b?.email || 'pro@ceramiquedesign.fr'}</p>
-                  <p><strong>{b2b?.phoneLabel || 'Téléphone:'}</strong> {b2b?.phone || '+33 1 23 45 67 88'}</p>
-                  <p><strong>{b2b?.hoursLabel || 'Horaires:'}</strong> {b2b?.hours || 'Lun-Ven 8h-19h'}</p>
+                  <p><strong>{b2b?.emailLabel || t.professionalsPage.contactBox.emailLabel}</strong> {b2b?.email || 'pro@ceramiquedesign.fr'}</p>
+                  <p><strong>{b2b?.phoneLabel || t.professionalsPage.contactBox.phoneLabel}</strong> {b2b?.phone || '+33 1 23 45 67 88'}</p>
+                  <p><strong>{b2b?.hoursLabel || t.professionalsPage.contactBox.hoursLabel}</strong> {b2b?.hours || 'Lun-Ven 8h-19h'}</p>
                 </div>
               </div>
             </div>
 
             <div>
-              <h2 className="text-2xl font-light text-gray-800 mb-8">Inscription Professionnelle</h2>
+              <h2 className="text-2xl font-light text-gray-800 mb-8">{t.professionalsPage.form.title}</h2>
               
               {isSubmitted && (
                 <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-6">
-                  Votre demande d'inscription a été envoyée! Nous vous contacterons sous 24h.
+                  {t.professionalsPage.form.successMessage}
                 </div>
               )}
 
               <form id="professional-form" onSubmit={handleSubmit} className="space-y-6">
                 <div>
                   <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom de l'entreprise *
+                    {t.professionalsPage.form.companyLabel}
                   </label>
                   <input
                     type="text"
@@ -214,7 +176,7 @@ export default function ProfessionalsPage() {
 
                 <div>
                   <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-2">
-                    Nom du contact *
+                    {t.professionalsPage.form.contactLabel}
                   </label>
                   <input
                     type="text"
@@ -230,7 +192,7 @@ export default function ProfessionalsPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                      Email *
+                      {t.professionalsPage.form.emailLabel}
                     </label>
                     <input
                       type="email"
@@ -245,7 +207,7 @@ export default function ProfessionalsPage() {
 
                   <div>
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
-                      Téléphone *
+                      {t.professionalsPage.form.phoneLabel}
                     </label>
                     <input
                       type="tel"
@@ -261,7 +223,7 @@ export default function ProfessionalsPage() {
 
                 <div>
                   <label htmlFor="activity" className="block text-sm font-medium text-gray-700 mb-2">
-                    Secteur d'activité *
+                    {t.professionalsPage.form.activityLabel}
                   </label>
                   <select
                     id="activity"
@@ -271,19 +233,19 @@ export default function ProfessionalsPage() {
                     required
                     className="w-full pr-8 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm"
                   >
-                    <option value="">Sélectionnez votre activité</option>
-                    <option value="architecte">Architecte</option>
-                    <option value="decorateur">Décorateur d'intérieur</option>
-                    <option value="carreleur">Entreprise de carrelage</option>
-                    <option value="batiment">Entreprise du bâtiment</option>
-                    <option value="revendeur">Revendeur</option>
-                    <option value="autre">Autre</option>
+                    <option value="">{t.professionalsPage.form.activityPlaceholder}</option>
+                    <option value="architecte">{activityOptions.architect}</option>
+                    <option value="decorateur">{activityOptions.decorator}</option>
+                    <option value="carreleur">{activityOptions.tiler}</option>
+                    <option value="batiment">{activityOptions.construction}</option>
+                    <option value="revendeur">{activityOptions.reseller}</option>
+                    <option value="autre">{activityOptions.other}</option>
                   </select>
                 </div>
 
                 <div>
                   <label htmlFor="siret" className="block text-sm font-medium text-gray-700 mb-2">
-                    Numéro SIRET
+                    {t.professionalsPage.form.siretLabel}
                   </label>
                   <input
                     type="text"
@@ -297,7 +259,7 @@ export default function ProfessionalsPage() {
 
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-2">
-                    Votre projet / Besoins
+                    {t.professionalsPage.form.messageLabel}
                   </label>
                   <textarea
                     id="message"
@@ -307,10 +269,10 @@ export default function ProfessionalsPage() {
                     onChange={handleChange}
                     maxLength={500}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-500 focus:border-transparent text-sm resize-none"
-                    placeholder="Décrivez brièvement vos besoins..."
+                    placeholder={t.professionalsPage.form.messagePlaceholder}
                   ></textarea>
                   <p className="text-xs text-gray-500 mt-1">
-                    {formData.message.length}/500 caractères
+                    {formData.message.length}/500 {t.common.characters}
                   </p>
                 </div>
 
@@ -318,7 +280,7 @@ export default function ProfessionalsPage() {
                   type="submit"
                   className="w-full bg-gray-800 text-white py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors cursor-pointer whitespace-nowrap font-medium"
                 >
-                  Envoyer la Demande
+                  {t.professionalsPage.form.submit}
                 </button>
               </form>
             </div>

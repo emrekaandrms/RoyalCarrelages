@@ -23,6 +23,19 @@ export default function Footer() {
     })();
   }, [language]);
 
+  const socialLinks = [
+    {
+      href: 'https://www.instagram.com/royalcarrelages',
+      icon: 'ri-instagram-line',
+      label: t.contactPage.social.instagram,
+    },
+    {
+      href: 'https://www.facebook.com/royalcarrelages',
+      icon: 'ri-facebook-fill',
+      label: t.contactPage.social.facebook,
+    },
+  ];
+
   return (
     <footer className="bg-gray-800 text-white py-16">
       <div className="max-w-7xl mx-auto px-8">
@@ -75,8 +88,20 @@ export default function Footer() {
           <p className="text-gray-400 text-sm">
             © 2024 {cmsFooter?.companyName || 'Tile Brand'}. {t.footer.rights}
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            {/* Gizlilik/şartlar sayfaları yoksa devre dışı bıraktık */}
+          <div className="flex space-x-4 mt-4 md:mt-0">
+            {socialLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-gray-200 hover:bg-white hover:text-gray-900 transition-colors"
+                aria-label={link.label}
+                title={link.label}
+              >
+                <i className={`${link.icon} text-xl`}></i>
+              </a>
+            ))}
           </div>
         </div>
       </div>

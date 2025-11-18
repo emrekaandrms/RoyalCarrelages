@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Pacifico } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "@/lib/language-context";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 const pacifico = Pacifico({
   weight: '400',
@@ -69,6 +70,7 @@ export default function RootLayout({
       >
         <LanguageProvider>
           {children}
+          <WhatsAppButton />
         </LanguageProvider>
       </body>
     </html>

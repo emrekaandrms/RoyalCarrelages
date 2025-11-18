@@ -23,6 +23,12 @@ interface CMSFooter {
   companyName: string;
 }
 
+interface CMSContactLocation {
+  title: string;
+  addressLines: string[];
+  mapEmbedUrl: string;
+}
+
 interface CMSContact {
   title: string;
   description: string;
@@ -31,6 +37,7 @@ interface CMSContact {
   email: string;
   hoursLines: string[];
   showroomTitle: string;
+  locations: CMSContactLocation[];
 }
 
 interface CMSProfessionals {
@@ -81,8 +88,32 @@ export default function SettingsManagement() {
     en: { description: '', addressLines: ['', ''], phone: '', email: '', companyName: 'Royal Carrelages' },
   });
   const [contactCMS, setContactCMS] = useState<Record<Language, CMSContact>>({
-    fr: { title: '', description: '', addressLines: ['', ''], phone: '', email: '', hoursLines: [''], showroomTitle: '' },
-    en: { title: '', description: '', addressLines: ['', ''], phone: '', email: '', hoursLines: [''], showroomTitle: '' },
+  fr: {
+    title: '',
+    description: '',
+    addressLines: ['', ''],
+    phone: '',
+    email: '',
+    hoursLines: [''],
+    showroomTitle: '',
+    locations: [
+      { title: '', addressLines: [''], mapEmbedUrl: '' },
+      { title: '', addressLines: [''], mapEmbedUrl: '' },
+    ],
+  },
+  en: {
+    title: '',
+    description: '',
+    addressLines: ['', ''],
+    phone: '',
+    email: '',
+    hoursLines: [''],
+    showroomTitle: '',
+    locations: [
+      { title: '', addressLines: [''], mapEmbedUrl: '' },
+      { title: '', addressLines: [''], mapEmbedUrl: '' },
+    ],
+  },
   });
   const [professionalsCMS, setProfessionalsCMS] = useState<Record<Language, CMSProfessionals>>({
     fr: { title: '', description: '' },
@@ -146,6 +177,7 @@ export default function SettingsManagement() {
         email: 'hello@tilebrand.com',
         companyName: 'Royal Carrelages',
       };
+      const defaultContactLocations = getDefaultContactLocations();
       const contactFallbackFr: CMSContact = {
         title: 'Contactez-nous',
         description: `Notre équipe d'experts est là pour vous accompagner dans tous vos projets. N'hésitez pas à nous contacter pour une consultation personnalisée.`,
@@ -153,11 +185,26 @@ export default function SettingsManagement() {
         phone: '+33 1 23 45 67 89',
         email: 'contact@ceramiquedesign.fr',
         hoursLines: ['Lun - Ven: 9h00 - 18h00', 'Sam: 10h00 - 16h00'],
-        showroomTitle: 'Notre Showroom',
+        showroomTitle: 'Nos Showrooms',
+        locations: defaultContactLocations.map((loc) => ({
+          title: loc.title,
+          addressLines: [...loc.addressLines],
+          mapEmbedUrl: loc.mapEmbedUrl,
+        })),
       };
       const contactFallbackEn: CMSContact = {
-        // If you want different EN defaults, edit here; mirroring FR for now
-        ...contactFallbackFr,
+        title: 'Contact Us',
+        description: 'Our team of experts is here to support all of your projects. Reach out for a tailored consultation.',
+        addressLines: ['123 Ceramic Street', 'Paris, France'],
+        phone: '+33 1 23 45 67 89',
+        email: 'contact@ceramiquedesign.fr',
+        hoursLines: ['Mon - Fri: 9:00 - 18:00', 'Sat: 10:00 - 16:00'],
+        showroomTitle: 'Our Showrooms',
+        locations: defaultContactLocations.map((loc, index) => ({
+          title: index === 0 ? 'Paris Showroom' : index === 1 ? 'Lyon Showroom' : loc.title,
+          addressLines: [...loc.addressLines],
+          mapEmbedUrl: loc.mapEmbedUrl,
+        })),
       };
       const proFallbackFr: CMSProfessionals = {
         title: 'Espace Professionnels',
@@ -223,18 +270,154 @@ export default function SettingsManagement() {
     };
   }
 
+function getDefaultContactLocations(): CMSContactLocation[] {
+  return [
+    {
+      title: 'Showroom Paris',
+      addressLines: ['123 Rue de la Céramique', '75001 Paris, France'],
+      mapEmbedUrl: 'https://maps.google.com/maps?q=123%20Rue%20de%20la%20C%C3%A9ramique%2075001%20Paris%20France&output=embed',
+    },
+    {
+      title: 'Showroom Lyon',
+      addressLines: ['45 Rue des Arts', '69002 Lyon, France'],
+      mapEmbedUrl: 'https://maps.google.com/maps?q=45%20Rue%20des%20Arts%2069002%20Lyon%20France&output=embed',
+    },
+  ];
+}
+
   function sanitizeContact(val: CMSContact | null | undefined): CMSContact | undefined {
     if (!val) return undefined;
+  const defaultLocations = getDefaultContactLocations();
+  const locations = Array.isArray(val.locations) && val.locations.length
+    ? val.locations.map((loc, index) => {
+        const fallback = defaultLocations[index] ?? defaultLocations[0];
+        const addressLines = Array.isArray(loc?.addressLines) && loc.addressLines.length
+          ? loc.addressLines.map((line) => line ?? '')
+          : [...fallback.addressLines];
+        const title = (loc?.title ?? '').trim() || fallback.title;
+        const mapEmbedUrl = (loc?.mapEmbedUrl ?? '').trim() || fallback.mapEmbedUrl;
+        return {
+          title,
+          addressLines,
+          mapEmbedUrl,
+        };
+      })
+    : defaultLocations.map((loc) => ({
+        title: loc.title,
+        addressLines: [...loc.addressLines],
+        mapEmbedUrl: loc.mapEmbedUrl,
+      }));
+
+  while (locations.length < 2) {
+    const fallback = defaultLocations[locations.length % defaultLocations.length] ?? defaultLocations[0];
+    locations.push({
+      title: fallback.title,
+      addressLines: [...fallback.addressLines],
+      mapEmbedUrl: fallback.mapEmbedUrl,
+    });
+  }
+
     return {
       title: val.title ?? '',
       description: val.description ?? '',
-      addressLines: Array.isArray(val.addressLines) && val.addressLines.length ? val.addressLines : ['', ''],
+    addressLines: Array.isArray(val.addressLines) && val.addressLines.length
+      ? val.addressLines
+      : [...locations[0].addressLines],
       phone: val.phone ?? '',
       email: val.email ?? '',
-      hoursLines: Array.isArray(val.hoursLines) && val.hoursLines.length ? val.hoursLines : [''],
+    hoursLines: Array.isArray(val.hoursLines) && val.hoursLines.length ? val.hoursLines : [''],
       showroomTitle: val.showroomTitle ?? '',
+    locations,
     };
   }
+
+  const handleLocationFieldChange = (index: number, field: keyof CMSContactLocation, value: string) => {
+    setContactCMS((prev) => {
+      const next = { ...prev };
+      const langState = { ...next[activeLang] };
+      const locations = [...langState.locations];
+      const location = { ...locations[index], [field]: value };
+      locations[index] = location;
+      langState.locations = locations;
+      next[activeLang] = langState;
+      return next;
+    });
+  };
+
+  const handleLocationAddressLineChange = (index: number, lineIndex: number, value: string) => {
+    setContactCMS((prev) => {
+      const next = { ...prev };
+      const langState = { ...next[activeLang] };
+      const locations = [...langState.locations];
+      const location = { ...locations[index] };
+      const lines = [...location.addressLines];
+      lines[lineIndex] = value;
+      location.addressLines = lines;
+      locations[index] = location;
+      langState.locations = locations;
+      next[activeLang] = langState;
+      return next;
+    });
+  };
+
+  const handleAddLocationAddressLine = (index: number) => {
+    setContactCMS((prev) => {
+      const next = { ...prev };
+      const langState = { ...next[activeLang] };
+      const locations = [...langState.locations];
+      const location = { ...locations[index] };
+      location.addressLines = [...location.addressLines, ''];
+      locations[index] = location;
+      langState.locations = locations;
+      next[activeLang] = langState;
+      return next;
+    });
+  };
+
+  const handleRemoveLocationAddressLine = (index: number, lineIndex: number) => {
+    setContactCMS((prev) => {
+      const next = { ...prev };
+      const langState = { ...next[activeLang] };
+      const locations = [...langState.locations];
+      const location = { ...locations[index] };
+      if (location.addressLines.length > 1) {
+        location.addressLines = location.addressLines.filter((_, i) => i !== lineIndex);
+      }
+      locations[index] = location;
+      langState.locations = locations;
+      next[activeLang] = langState;
+      return next;
+    });
+  };
+
+  const handleAddLocation = () => {
+    setContactCMS((prev) => {
+      const next = { ...prev };
+      const langState = { ...next[activeLang] };
+      if (langState.locations.length >= 4) {
+        return prev;
+      }
+      langState.locations = [
+        ...langState.locations,
+        { title: '', addressLines: [''], mapEmbedUrl: '' },
+      ];
+      next[activeLang] = langState;
+      return next;
+    });
+  };
+
+  const handleRemoveLocation = (index: number) => {
+    setContactCMS((prev) => {
+      const next = { ...prev };
+      const langState = { ...next[activeLang] };
+      if (langState.locations.length <= 1) {
+        return prev;
+      }
+      langState.locations = langState.locations.filter((_, i) => i !== index);
+      next[activeLang] = langState;
+      return next;
+    });
+  };
 
   const onSave = async () => {
     try {
@@ -498,6 +681,85 @@ export default function SettingsManagement() {
                 className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
                 placeholder={`Horaires ligne ${i + 1}`}
               />
+            ))}
+          </div>
+
+          <div className="mt-6 space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-md font-medium text-gray-800">Adresses showrooms</h4>
+              <button
+                type="button"
+                onClick={handleAddLocation}
+                disabled={contactCMS[activeLang].locations.length >= 4}
+                className="text-sm text-gray-700 border border-gray-300 rounded px-3 py-1 hover:bg-gray-100 disabled:opacity-50"
+              >
+                + Ajouter une adresse
+              </button>
+            </div>
+
+            {contactCMS[activeLang].locations.map((location, index) => (
+              <div key={index} className="bg-white border border-gray-200 rounded-lg p-4 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Showroom {index + 1}</span>
+                  {contactCMS[activeLang].locations.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveLocation(index)}
+                      className="text-xs text-red-600 hover:text-red-700"
+                    >
+                      Supprimer
+                    </button>
+                  )}
+                </div>
+
+                <input
+                  type="text"
+                  value={location.title}
+                  onChange={(e) => handleLocationFieldChange(index, 'title', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                  placeholder="Titre du showroom"
+                />
+
+                <div className="space-y-2">
+                  {location.addressLines.map((line, lineIndex) => (
+                    <div key={lineIndex} className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={line}
+                        onChange={(e) => handleLocationAddressLineChange(index, lineIndex, e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded text-sm"
+                        placeholder={`Adresse ligne ${lineIndex + 1}`}
+                      />
+                      {location.addressLines.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLocationAddressLine(index, lineIndex)}
+                          className="text-xs text-gray-500 hover:text-gray-700 px-2 py-1 border border-gray-300 rounded"
+                        >
+                          Retirer
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => handleAddLocationAddressLine(index)}
+                    className="text-xs text-gray-700 border border-dashed border-gray-400 rounded px-3 py-1 hover:bg-gray-100"
+                  >
+                    + Ajouter une ligne d'adresse
+                  </button>
+                </div>
+
+                <textarea
+                  value={location.mapEmbedUrl}
+                  onChange={(e) => handleLocationFieldChange(index, 'mapEmbedUrl', e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded text-sm h-20"
+                  placeholder="URL d'intégration Google Maps (iframe src)"
+                />
+                <p className="text-xs text-gray-500">
+                  Utilisez l'URL &quot;src&quot; de l'iframe Google Maps pour cet emplacement (format https://maps.google.com/...&amp;output=embed).
+                </p>
+              </div>
             ))}
           </div>
 

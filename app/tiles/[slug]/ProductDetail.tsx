@@ -21,8 +21,11 @@ interface ProductDetailProps {
 }
 
 export default function ProductDetail({ product }: ProductDetailProps) {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const [isZoomed, setIsZoomed] = useState(false);
+  const rawWhatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33786033509';
+  const sanitizedWhatsAppNumber = rawWhatsAppNumber.replace(/\D/g, '') || '33786033509';
+  const whatsappBaseUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || `https://wa.me/${sanitizedWhatsAppNumber}`;
 
   // Color translation function
   const translateColor = (color: string) => {
@@ -33,10 +36,12 @@ export default function ProductDetail({ product }: ProductDetailProps) {
   // WhatsApp message function
   const handlePriceInfo = () => {
     const translatedColor = translateColor(product.renk);
-    const message = encodeURIComponent(
-      `Hello, I would like to get price information for ${product.koleksiyonu} - ${translatedColor} (${product.olcusu})`
-    );
-    window.open(`https://wa.me/33786033509?text=${message}`, '_blank');
+    const messageTemplate = t.product.whatsappMessage
+      .replace('{collection}', product.koleksiyonu)
+      .replace('{color}', translatedColor)
+      .replace('{size}', product.olcusu);
+    const separator = whatsappBaseUrl.includes('?') ? '&' : '?';
+    window.open(`${whatsappBaseUrl}${separator}text=${encodeURIComponent(messageTemplate)}`, '_blank');
   };
 
   return (
