@@ -13,9 +13,18 @@ export async function POST(req: NextRequest) {
     const smtpPort = Number(process.env.SMTP_PORT || 587);
     const smtpUser = process.env.SMTP_USER;
     const smtpPass = process.env.SMTP_PASS;
-    const toEmail = process.env.PROFESSIONALS_TO_EMAIL || 'info@royalcarrelages.fr';
+    const recipientsEnv =
+      process.env.PROFESSIONALS_TO_EMAILS ||
+      process.env.PROFESSIONALS_TO_EMAIL ||
+      '';
+    const recipients = recipientsEnv
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+    const fallbackRecipients = ['info@royalcarrelages.fr', 'emrekaandrms@gmail.com'];
+    const toList = recipients.length ? recipients : fallbackRecipients;
 
-    if (!smtpHost || !smtpUser || !smtpPass || !toEmail) {
+    if (!smtpHost || !smtpUser || !smtpPass || !toList.length) {
       return NextResponse.json({ error: 'Email is not configured' }, { status: 500 });
     }
 
@@ -42,7 +51,7 @@ export async function POST(req: NextRequest) {
 
     await transporter.sendMail({
       from: `Professionals Form <${smtpUser}>`,
-      to: toEmail,
+      to: toList.join(', '),
       subject: `[Professionals] Nouvelle demande - ${company}`,
       replyTo: email,
       html,
