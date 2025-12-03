@@ -143,7 +143,7 @@ export default function ProfessionalsPage() {
                 </p>
                 <div className="space-y-2 text-gray-600">
                   <p><strong>{b2b?.emailLabel || t.professionalsPage.contactBox.emailLabel}</strong> {b2b?.email || 'pro@ceramiquedesign.fr'}</p>
-                  <p><strong>{b2b?.phoneLabel || t.professionalsPage.contactBox.phoneLabel}</strong> {b2b?.phone || '+33 1 23 45 67 88'}</p>
+                  <p><strong>{b2b?.phoneLabel || t.professionalsPage.contactBox.phoneLabel}</strong> {b2b?.phone || '+33757471726'}</p>
                   <p><strong>{b2b?.hoursLabel || t.professionalsPage.contactBox.hoursLabel}</strong> {b2b?.hours || 'Lun-Ven 8h-19h'}</p>
                 </div>
               </div>

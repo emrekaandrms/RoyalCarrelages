@@ -166,14 +166,14 @@ export default function SettingsManagement() {
       const footerFallbackFr: CMSFooter = {
         description: translations.fr.footer.description,
         addressLines: ['1234 Design Street', 'New York, NY 10001'],
-        phone: '+1 (555) 123-4567',
+        phone: '+33757471726',
         email: 'hello@tilebrand.com',
         companyName: 'Royal Carrelages',
       };
       const footerFallbackEn: CMSFooter = {
         description: translations.en.footer.description,
         addressLines: ['1234 Design Street', 'New York, NY 10001'],
-        phone: '+1 (555) 123-4567',
+        phone: '+33757471726',
         email: 'hello@tilebrand.com',
         companyName: 'Royal Carrelages',
       };
@@ -182,7 +182,7 @@ export default function SettingsManagement() {
         title: 'Contactez-nous',
         description: `Notre équipe d'experts est là pour vous accompagner dans tous vos projets. N'hésitez pas à nous contacter pour une consultation personnalisée.`,
         addressLines: ['123 Rue de la Céramique', '75001 Paris, France'],
-        phone: '+33 1 23 45 67 89',
+        phone: '+33757471726',
         email: 'contact@ceramiquedesign.fr',
         hoursLines: ['Lun - Ven: 9h00 - 18h00', 'Sam: 10h00 - 16h00'],
         showroomTitle: 'Nos Showrooms',
@@ -196,7 +196,7 @@ export default function SettingsManagement() {
         title: 'Contact Us',
         description: 'Our team of experts is here to support all of your projects. Reach out for a tailored consultation.',
         addressLines: ['123 Ceramic Street', 'Paris, France'],
-        phone: '+33 1 23 45 67 89',
+        phone: '+33757471726',
         email: 'contact@ceramiquedesign.fr',
         hoursLines: ['Mon - Fri: 9:00 - 18:00', 'Sat: 10:00 - 16:00'],
         showroomTitle: 'Our Showrooms',
@@ -220,7 +220,7 @@ export default function SettingsManagement() {
         emailLabel: 'Email:',
         email: 'pro@ceramiquedesign.fr',
         phoneLabel: 'Téléphone:',
-        phone: '+33 1 23 45 67 88',
+        phone: '+33757471726',
         hoursLabel: 'Horaires:',
         hours: 'Lun-Ven 8h-19h',
       };
@@ -230,7 +230,7 @@ export default function SettingsManagement() {
         emailLabel: 'Email:',
         email: 'pro@ceramiquedesign.fr',
         phoneLabel: 'Phone:',
-        phone: '+33 1 23 45 67 88',
+        phone: '+33757471726',
         hoursLabel: 'Hours:',
         hours: 'Mon-Fri 8am-7pm',
       };
@@ -878,7 +878,7 @@ function getDefaultContactLocations(): CMSContactLocation[] {
             <div className="text-gray-600 mb-4">{professionalsB2B[activeLang].contactDescription || 'Description'}</div>
             <div className="space-y-2 text-gray-700">
               <div><strong>{professionalsB2B[activeLang].emailLabel || 'Email:'}</strong> {professionalsB2B[activeLang].email || 'example@domain.com'}</div>
-              <div><strong>{professionalsB2B[activeLang].phoneLabel || 'Téléphone:'}</strong> {professionalsB2B[activeLang].phone || '+33 ...'}</div>
+              <div><strong>{professionalsB2B[activeLang].phoneLabel || 'Téléphone:'}</strong> {professionalsB2B[activeLang].phone || '+33757471726'}</div>
               <div><strong>{professionalsB2B[activeLang].hoursLabel || 'Horaires:'}</strong> {professionalsB2B[activeLang].hours || 'Lun-Ven ...'}</div>
             </div>
           </div>

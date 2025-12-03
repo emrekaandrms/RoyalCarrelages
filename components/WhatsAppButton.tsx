@@ -5,8 +5,8 @@ import { useLanguage } from '@/lib/language-context';
 
 export default function WhatsAppButton() {
   const { t } = useLanguage();
-  const rawNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33786033509';
-  const sanitizedNumber = rawNumber.replace(/\D/g, '') || '33786033509';
+  const rawNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33757471726';
+  const sanitizedNumber = rawNumber.replace(/\D/g, '') || '33757471726';
   const whatsappUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || `https://wa.me/${sanitizedNumber}`;
   const label = t.common.whatsappTooltip;
 

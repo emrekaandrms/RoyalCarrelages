@@ -23,8 +23,8 @@ interface ProductDetailProps {
 export default function ProductDetail({ product }: ProductDetailProps) {
   const { t } = useLanguage();
   const [isZoomed, setIsZoomed] = useState(false);
-  const rawWhatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33786033509';
-  const sanitizedWhatsAppNumber = rawWhatsAppNumber.replace(/\D/g, '') || '33786033509';
+  const rawWhatsAppNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33757471726';
+  const sanitizedWhatsAppNumber = rawWhatsAppNumber.replace(/\D/g, '') || '33757471726';
   const whatsappBaseUrl = process.env.NEXT_PUBLIC_WHATSAPP_URL || `https://wa.me/${sanitizedWhatsAppNumber}`;
 
   // Color translation function

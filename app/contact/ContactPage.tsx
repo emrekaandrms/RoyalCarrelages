@@ -170,7 +170,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-medium text-gray-800 mb-1">{t.contactPage.phoneLabel}</h3>
-                    <p className="text-gray-600">{cms?.phone || '+33 1 23 45 67 89'}</p>
+                    <p className="text-gray-600">{cms?.phone || '+33757471726'}</p>
                   </div>
                 </div>
 
