@@ -5,12 +5,13 @@ export const preferredRegion = 'cdg1';
 
 export async function GET(
   request: NextRequest,
-  { params }: any
+  { params }: { params: Promise<{ slug: string }> }
 ) {
   try {
+    const { slug } = await params;
     const product = await prisma.product.findUnique({
       where: {
-        slug: params.slug
+        slug
       }
     });
 

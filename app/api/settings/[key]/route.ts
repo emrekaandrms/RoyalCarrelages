@@ -3,9 +3,9 @@ import prisma from '@/lib/prisma';
 
 export async function GET(
   _request: NextRequest,
-  { params }: { params: { key: string } }
+  { params }: { params: Promise<{ key: string }> }
 ) {
-  const { key } = params;
+  const { key } = await params;
   const setting = await prisma.setting.findUnique({ where: { key } }).catch(() => null);
   if (!setting) {
     return NextResponse.json({ value: null }, { status: 200 });
@@ -13,8 +13,8 @@ export async function GET(
   return NextResponse.json({ value: setting.value }, { status: 200 });
 }
 
-export async function PUT(request: NextRequest, { params }: { params: { key: string } }) {
-  const { key } = params;
+export async function PUT(request: NextRequest, { params }: { params: Promise<{ key: string }> }) {
+  const { key } = await params;
   const body = await request.json().catch(() => ({}));
   if (typeof body.value === 'undefined') {
     return NextResponse.json({ error: 'Missing value' }, { status: 400 });
